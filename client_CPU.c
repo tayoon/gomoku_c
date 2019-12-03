@@ -47,24 +47,24 @@ int main(void) {
 
 	printf("%sに接続しました\n", destination);
 
-char buffer[1024];
-recv(s, buffer, 1024, 0);
+char buffer1[1024];
+recv(s, buffer1, 1024, 0);
 
-printf("→ %s", buffer);
+printf("→ %s", buffer1);
 
 char name[128] = "takuma";
 printf("%s\n", name);
 send(s, name, strlen(name), 0);
 
 while(1){
-	char buffer[1024];
+	char buffer2[1024];
 
 	//サーバからデータを受信
 	
 
-	recv(s, buffer, 1024, 0);
+	recv(s, buffer2, 1024, 0);
 
-	printf("→ %s\n\n", buffer);
+	printf("→ %s\n\n", buffer2);
 
 	//char msg[] = "Hello Server!";
 	printf("サーバに送信する文字列を入力してください\n");
