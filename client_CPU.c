@@ -35,9 +35,7 @@ int main(void) {
 
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 
-
-
-	//サーバへの接続
+    //サーバへの接続
 
 	if (connect(s, (struct sockaddr *) &dest, sizeof(dest))) {
 
@@ -48,6 +46,15 @@ int main(void) {
 	}
 
 	printf("%sに接続しました\n", destination);
+
+char buffer[1024];
+recv(s, buffer, 1024, 0);
+
+printf("→ %s", buffer);
+
+char name[128] = "takuma";
+printf("%s\n", name);
+send(s, name, strlen(name), 0);
 
 while(1){
 	char buffer[1024];
