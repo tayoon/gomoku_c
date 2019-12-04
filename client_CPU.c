@@ -35,7 +35,9 @@ int main(void) {
 
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 
-    //サーバへの接続
+
+
+	//サーバへの接続
 
 	if (connect(s, (struct sockaddr *) &dest, sizeof(dest))) {
 
@@ -47,36 +49,27 @@ int main(void) {
 
 	printf("%sに接続しました\n", destination);
 
-	char buffer1[1024];
-	recv(s, buffer1, 1024, 0);
+while(1){
+	char buffer[1024];
 
-	printf("→ %s", buffer1);
+	//サーバからデータを受信
+	
 
-	char name[128] = "takuma";
-	printf("%s\n", name);
-	send(s, name, strlen(name), 0);
+	recv(s, buffer, 1024, 0);
 
-	while(1){
-		char buffer2[1024];
+	printf("→ %s\n\n", buffer);
 
-		//サーバからデータを受信
-		
+	//char msg[] = "Hello Server!";
+	printf("サーバに送信する文字列を入力してください\n");
+	char msg[128];
+	scanf("%s", msg);
 
-		recv(s, buffer2, 1024, 0);
+	//サーバにデータを送信
 
-		printf("→ %s\n\n", buffer2);
+	//send(s, "Hello Server!", strlen(msg), 0);
+	send(s, msg, strlen(msg), 0);
 
-		//char msg[] = "Hello Server!";
-		printf("サーバに送信する文字列を入力してください\n");
-		char msg[128];
-		scanf("%s", msg);
-
-		//サーバにデータを送信
-
-		//send(s, "Hello Server!", strlen(msg), 0);
-		send(s, msg, strlen(msg), 0);
-
-	}
+}
 
 	// Windows でのソケットの終了
 
