@@ -23,7 +23,7 @@ int main(void) {
 	//サーバの情報を入力
 	char destination[256];
 	//scanf("%s",destination);
-	sprintf(destination,"192.168.56.1");		//自分のPCのIPアドレス
+	sprintf(destination,"192.168.11.2");		//自分のPCのIPアドレス
 	char port_char[256];
 	int start_flag;
 	if(!strcmp("black",str)){sprintf(port_char,"12345");start_flag=1;}
