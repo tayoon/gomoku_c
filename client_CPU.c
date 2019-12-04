@@ -47,36 +47,36 @@ int main(void) {
 
 	printf("%sに接続しました\n", destination);
 
-char buffer1[1024];
-recv(s, buffer1, 1024, 0);
+	char buffer1[1024];
+	recv(s, buffer1, 1024, 0);
 
-printf("→ %s", buffer1);
+	printf("→ %s", buffer1);
 
-char name[128] = "takuma";
-printf("%s\n", name);
-send(s, name, strlen(name), 0);
+	char name[128] = "takuma";
+	printf("%s\n", name);
+	send(s, name, strlen(name), 0);
 
-while(1){
-	char buffer2[1024];
+	while(1){
+		char buffer2[1024];
 
-	//サーバからデータを受信
-	
+		//サーバからデータを受信
+		
 
-	recv(s, buffer2, 1024, 0);
+		recv(s, buffer2, 1024, 0);
 
-	printf("→ %s\n\n", buffer2);
+		printf("→ %s\n\n", buffer2);
 
-	//char msg[] = "Hello Server!";
-	printf("サーバに送信する文字列を入力してください\n");
-	char msg[128];
-	scanf("%s", msg);
+		//char msg[] = "Hello Server!";
+		printf("サーバに送信する文字列を入力してください\n");
+		char msg[128];
+		scanf("%s", msg);
 
-	//サーバにデータを送信
+		//サーバにデータを送信
 
-	//send(s, "Hello Server!", strlen(msg), 0);
-	send(s, msg, strlen(msg), 0);
+		//send(s, "Hello Server!", strlen(msg), 0);
+		send(s, msg, strlen(msg), 0);
 
-}
+	}
 
 	// Windows でのソケットの終了
 
