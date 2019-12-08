@@ -6,6 +6,8 @@
 
 int board[15][15];
 
+
+
 int main(void) {
 
 	//接続するサーバの情報の構造体を用意
@@ -25,9 +27,19 @@ int main(void) {
 	//scanf("%s",destination);
 	sprintf(destination,"192.168.11.2");		//自分のPCのIPアドレス
 	char port_char[256];
-	int start_flag;
-	if(!strcmp("black",str)){sprintf(port_char,"12345");start_flag=1;}
-	else{sprintf(port_char,"12346");start_flag=0;}
+	int start_flag, white_flag, ban;
+	if(!strcmp("black",str)){
+		sprintf(port_char,"12345");
+		start_flag = 1;
+		white_flag = 0;
+		ban = 0;
+	}
+	else{
+		sprintf(port_char,"12346");
+		start_flag=0;
+		white_flag = 1;
+		ban = 1;
+	}
 
 	int port = atoi(port_char);
 	dest.sin_port = htons(port);  //ポート番号
@@ -69,6 +81,15 @@ int main(void) {
 			board[y-1][x-1] = 1;
 			start_flag = 0;
 		}
+		else if(white_flag){
+			while(1){
+				x = rand() % 3 + 7;
+				y = rand() % 3 + 7;
+				if(!board[y-1][x-1])break;
+			}
+			board[y-1][x-1] = 1;
+			white_flag = 0;
+		}
 		//先手なら2手目から、後手なら1手目からelse通る
 		else{
 			char *ptr;
@@ -79,6 +100,36 @@ int main(void) {
 			board[enemy_y-1][enemy_x-1] = 2;
 			/************以下にロジックを書く********/
 			while(1){
+				int i, j;
+				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(board[i][j])break;
+					}
+					if(board[i][j]){printf("y: %d, x: %d\n", i, j);y_start = i + 1;break;}
+				}
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(board[j][i])break;
+					}
+					if(board[j][i]){printf("x: %d, y: %d\n", i, j);x_start = i + 1;break;}
+				}
+				for(i = 14; i >= 0; i--){
+					for(j = 14; j >= 0; j--){
+						if(board[i][j])break;
+					}
+					if(board[i][j]){printf("y: %d, x: %d\n", i, j);y_end = i + 1;break;}
+				}
+				for(i = 14; i >= 0; i--){
+					for(j = 14; j >= 0; j--){
+						printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
+						if(board[j][i])break;
+					}
+					if(board[j][i]){printf("x: %d, y: %d\n", i, j);x_end = i + 1;break;}
+				}
+				printf("start: x = %d, y = %d\n", x_start, y_start);
+				printf("end: x = %d, y = %d\n", x_end, y_end);
+
 				srand((unsigned)time(NULL));
 				x = rand()%15 + 1;
 				y = rand()%15 + 1;
