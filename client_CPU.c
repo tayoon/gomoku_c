@@ -6,6 +6,95 @@
 
 int board[15][15];
 
+int LeUp_judge(int a, int b, int count){
+	if(!board[(a-1) - 1][(b-1) - 1])return 0;
+	if(board[(a-1) - 1][(b-1) - 1] == 2){
+		count++;
+		count += LeUp_judge(a-1, b-1, count);
+	}
+	return count;
+}
+int Up_judge(int a, int b, int count){
+	if(board[(a-1) - 1][b-1] == 2){
+		count++;
+		count += Up_judge(a, b-1, count);
+	}
+	return count;
+}
+int RiUp_judge(int a, int b, int count){
+	if(board[(a-1) - 1][(b-1) + 1] == 2){
+		count++;
+		count += RiUp_judge(a+1, b-1, count);
+	}
+	return count;
+}
+int Left_judge(int a, int b, int count){
+	if(board[a-1][(b-1) - 1] == 2){
+		count++;
+		count += Left_judge(a-1, b, count);
+	}
+	return count;
+}
+int Right_judge(int a, int b, int count){
+	if(board[a-1][(b-1) + 1] == 2){
+		count++;
+		count += Right_judge(a-1, b+1, count);
+	}
+	return count;
+}
+int LeDo_judge(int a, int b, int count){
+	if(board[(a-1) + 1][(b-1) - 1] == 2){
+		count++;
+		count += LeDo_judge(a-1, b+1, count);
+	}
+	return count;
+}
+int Down_judge(int a, int b, int count){
+	if(board[(a-1) + 1][b-1] == 2){
+		count++;
+		count += Down_judge(a-1, b-1, count);
+	}
+	return count;
+}
+int RiDo_judge(int a, int b, int count){
+	if(board[(a-1) + 1][(b-1) + 1] == 2){
+		count++;
+		count += RiDo_judge(a-1, b-1, count);
+	}
+	return count;
+}
+
+int ban_judge(int a, int b){		//board[a-1][b-1]のジャッジ
+	int ban3_cnt = 0, ban4_cnt = 0, ban5_cnt = 0;
+	int width, deepth, slash, backslash;
+	/*for(int i = -1; i < 2; i++){			//8方向調べる
+		for(int j = -1; j < 2; j++){
+			if(i == 0 && j == 0)continue;
+			if(board[(a-1) + i][(b-1) + j] == 2){
+				if(board[(a-1+i) + i][(b-1+j) + j] == 2){
+					ban3_cnt++;
+					if(board[(a-1+i+i) + i][(b-1+j+j) + j] == 2)ban4_cnt++;
+				}
+			}
+			printf("i: %d, j: %d, 3: %d, 4: %d\n", i, j, ban3_cnt, ban4_cnt);
+		}
+	}*/
+	if((width = Left_judge(a, b, 0) + Right_judge(a, b, 0)) >= 2)ban3_cnt++;
+	if((deepth = Up_judge(a, b, 0) + Down_judge(a, b, 0)) >= 2)ban3_cnt++;
+	if((slash = RiUp_judge(a, b, 0) + LeDo_judge(a, b, 0)) >= 2)ban3_cnt++;
+	if((backslash = LeUp_judge(a, b, 0) + RiDo_judge(a, b, 0)) >= 2)ban3_cnt++;
+	if(width >= 3)ban4_cnt++;
+	if(deepth >= 3)ban4_cnt++;
+	if(slash >= 3)ban4_cnt++;
+	if(backslash >= 3)ban4_cnt++;
+	if(width >= 4 || deepth >= 4 || slash >= 4 || backslash >= 4)ban5_cnt++;
+	
+	printf("3: %d, 4: %d, 5: %d\n", ban3_cnt, ban4_cnt, ban5_cnt);
+	printf("leup: %d, up: %d, riup: %d, left: %d, right: %d, ledo: %d, down: %d, rido: %d\n",
+			LeUp_judge(a, b, 0), Up_judge(a, b, 0), RiUp_judge(a, b, 0), Left_judge(a, b, 0), Right_judge(a, b, 0), LeDo_judge(a, b, 0), Down_judge(a, b, 0), RiDo_judge(a, b, 0));
+	if(ban3_cnt >= 2 || ban4_cnt >= 2 || ban5_cnt)return 0;
+	else return 1;
+}
 
 
 int main(void) {
@@ -76,8 +165,7 @@ int main(void) {
 		if(!strcmp("end",buffer))break;
 		//先手の1手目
 		if(start_flag){
-			x = 8;
-			y = 8;
+			x = 8, y = 8;
 			board[y-1][x-1] = 1;
 			start_flag = 0;
 		}
@@ -99,7 +187,11 @@ int main(void) {
 			int enemy_y = atoi(ptr);
 			board[enemy_y-1][enemy_x-1] = 2;
 			/************以下にロジックを書く********/
+
+			if(!ban_judge(enemy_y, enemy_x))break;
+
 			while(1){
+				/*
 				int i, j;
 				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
 				for(i = 0; i < 15; i++){
@@ -129,6 +221,7 @@ int main(void) {
 				}
 				printf("start: x = %d, y = %d\n", x_start, y_start);
 				printf("end: x = %d, y = %d\n", x_end, y_end);
+				*/
 
 				srand((unsigned)time(NULL));
 				x = rand()%15 + 1;
