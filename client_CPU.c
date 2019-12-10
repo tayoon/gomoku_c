@@ -97,7 +97,6 @@ int Right_judge(int dir_y, int dir_x, int count, int a_cnt){
 }
 
 int LeDo_judge(int dir_y, int dir_x, int count, int a_cnt){
-	//if(!board[(dir_y-1) + 1][(dir_x-1) - 1] && !board[(dir_y-1) - 1][(dir_x-1) + 1])return 0;
 	int rev = 0;
 	if(board[(dir_y-1) - 1][(dir_x-1) + 1] == 2)rev++;if(board[(dir_y-1) - 2][(dir_x-1) + 2] == 2)rev++;
 	int go = 1;
@@ -173,14 +172,11 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 	if(g >= 3){ban3_cnt = 0;ban4_cnt++;}
 	if(h >= 3){ban3_cnt = 0;ban4_cnt++;}
 
-	/*if(a >= 4 || b >= 4 || c >= 4 || d >= 4 || e >= 4 || f >= 4 || g >= 4 || h >= 4){ban4_cnt = 0;five_cnt++;}
+	//if(a >= 4 || b >= 4 || c >= 4 || d >= 4 || e >= 4 || f >= 4 || g >= 4 || h >= 4){ban4_cnt = 0;five_cnt++;}
 	if(a >= 5 || b >= 5 || c >= 5 || d >= 5 || e >= 5 || f >= 5 || g >= 5 || h >= 5){
-		if(five_cnt >= 2 && ban6_cnt == five_cnt - 1){
-			five_cnt = 1, ban6_cnt = 0;
-		}else if(five_cnt >= 2 && ban6_cnt == five_cnt){
-			five_cnt = 0;
-		}
-	}*/
+		if(five_cnt != ban6_cnt)five_cnt++;
+		else if(five_cnt == ban6_cnt)ban6_cnt++;
+	}
 	
 	printf("3: %d, 4: %d, 5: %d, 6: %d\n", ban3_cnt, ban4_cnt, five_cnt, ban6_cnt);
 	printf("leup: %d, up: %d, riup: %d, left: %d, right: %d, ledo: %d, down: %d, rido: %d\n",
@@ -188,7 +184,6 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 	if(ban3_cnt >= 2 || ban4_cnt >= 2 || ban6_cnt)return 0;
 	else return 1;
 }
-
 
 int main(void) {
 
@@ -263,7 +258,14 @@ int main(void) {
 			start_flag = 0;
 		}
 		else if(white_flag){
+			char *ptr;
+			ptr = strtok(buffer,",");
+			int enemy_x = atoi(ptr);
+			ptr = strtok(NULL,",");
+			int enemy_y = atoi(ptr);
+			board[enemy_y-1][enemy_x-1] = 2;
 			while(1){
+				srand((unsigned)time(NULL));
 				x = rand() % 3 + 7;
 				y = rand() % 3 + 7;
 				if(!board[y-1][x-1])break;
@@ -280,12 +282,9 @@ int main(void) {
 			int enemy_y = atoi(ptr);
 			board[enemy_y-1][enemy_x-1] = 2;
 			/************以下にロジックを書く********/
-
-			if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
-			//if(ban_judge(enemy_y, enemy_x) == 1){printf("win!!");break;}
+			if(ban)if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
 
 			while(1){
-				/*
 				int i, j;
 				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
 				for(i = 0; i < 15; i++){
@@ -308,14 +307,13 @@ int main(void) {
 				}
 				for(i = 14; i >= 0; i--){
 					for(j = 14; j >= 0; j--){
-						printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
+						//printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
 						if(board[j][i])break;
 					}
 					if(board[j][i]){printf("x: %d, y: %d\n", i, j);x_end = i + 1;break;}
 				}
-				printf("start: x = %d, y = %d\n", x_start, y_start);
-				printf("end: x = %d, y = %d\n", x_end, y_end);
-				*/
+				printf("start: x = %d, y = %d\n", x_start - 1, y_start - 1);
+				printf("end: x = %d, y = %d\n", x_end + 1, y_end + 1);
 
 				srand((unsigned)time(NULL));
 				x = rand()%15 + 1;
@@ -333,8 +331,6 @@ int main(void) {
 	// Windows でのソケットの終了
 	closesocket(s);
 	WSACleanup();
-
-
 
 	return 0;
 
