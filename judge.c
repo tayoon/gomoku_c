@@ -5,6 +5,9 @@
 extern int board[15][15];
 int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int isforbidden[15][15];
+int for_y[4];
+int for_x[4];
 
 char direction[8][256] = {
   {"Left Up"},
@@ -77,7 +80,8 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 	int ban3_cnt = 0, ban4_cnt = 0, ban6_cnt = 0, five_cnt = 0;
   int num[8];
   int jud5[4];
-  int i = 0;
+  int i,j;
+
   for (i = 0; i < 8; i++){
     num[i] = judge(dir_y,dir_x,i);
   }
@@ -94,32 +98,18 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
   }
   for(i = 0; i < 4; i++){
     switch(jud5[i]){
-      case 4:five_cnt++;
-      case 5:ban6_cnt++;
+      case 2:ban3_cnt--; break;
+      case 3:ban4_cnt--; break;
+      case 4:five_cnt++; break;
+      case 5:ban6_cnt++; break;
       default: break;
     }
   }
-/*
-  for(i = 0; i < 4; i++){
-    switch(num[i]+num[7-i]){
-      case 2:ban3_cnt++;break;
-      case 3:ban4_cnt++;break;
-      case 4:five_cnt++;break;
-      case 5:ban6_cnt++;break;
-      default: break;
-    }
-  }
-*/
-	//if(a >= 4 || b >= 4 || c >= 4 || d >= 4 || e >= 4 || f >= 4 || g >= 4 || h >= 4){ban4_cnt = 0;five_cnt++;}
-	// if(a >= 5 || b >= 5 || c >= 5 || d >= 5 || e >= 5 || f >= 5 || g >= 5 || h >= 5){
-	// 	if(five_cnt != ban6_cnt)five_cnt++;
-	// 	else if(five_cnt == ban6_cnt)ban6_cnt++;
-	// }
 
-	printf("3: %d, 4: %d, 5: %d, 6: %d\n", ban3_cnt, ban4_cnt, five_cnt, ban6_cnt);
 	for(i = 0; i < 8; i++){
     printf("%s -> %d\n",direction[i],num[i]);
   }
+	printf("3: %d, 4: %d, 5: %d, 6: %d\n", ban3_cnt, ban4_cnt, five_cnt, ban6_cnt);
 	if(ban3_cnt >= 2 || ban4_cnt >= 2 || (ban6_cnt && !five_cnt))return 0;
 	else return 1;
 }
