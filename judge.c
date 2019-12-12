@@ -20,22 +20,22 @@ char direction[8][256] = {
 //二つ空白を見つけると終了
 int judge(int dir_y, int dir_x, int i,int numOfNode,int cnt_flag){
 
-  int x = dir_x + dx[i];
   int y = dir_y + dy[i];
+  int x = dir_x + dx[i];
 
+	if(board[y][x] == 1 || cnt_flag==2 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 	if(board[y][x] == 2)return judge(y,x,i,numOfNode + 1,cnt_flag);
 	if(board[y][x] == 0)return judge(y,x,i,numOfNode,cnt_flag + 1);
-	if(cnt_flag==2)return numOfNode;
 }
 
 //一つでも空白を見つけると終了
 int judge_adj(int dir_y, int dir_x, int i,int numOfNode){
 
-  int x = dir_x + dx[i];
   int y = dir_y + dy[i];
+  int x = dir_x + dx[i];
 
 	if(board[y][x] == 2)return judge_adj(y,x,i,numOfNode + 1);
-	if(board[y][x] == 0)return numOfNode;
+	if(board[y][x] == 1 || board[y][x] == 0 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 }
 
 int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
@@ -43,7 +43,7 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
   int jud_num[8] = {0,0,0,0,0,0,0,0};
   int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
   int jud_5[4] = {0,0,0,0};
-  int i,j;
+  int i = 0,j = 0;
 
   int y = dir_y - 1;
   int x = dir_x - 1;
@@ -62,8 +62,8 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
   //連続しているかに関わらず33,44を判断
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 2:ban3_cnt++;break;
-      case 3:ban4_cnt++;break;
+      case 2:ban3_cnt++; break;
+      case 3:ban4_cnt++; break;
       default: break;
     }
   }
@@ -85,6 +85,5 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
   if(ban3_cnt==2){printf("三三です.\n");return 0;}
   if(ban4_cnt==2){printf("四四です.\n");return 0;}
   if(ban6_cnt==2){printf("長連です.\n");return 0;}
-	//  if(ban3_cnt == 2 || ban4_cnt == 2 || (ban6_cnt && !five_cnt))return 0;
   return 1;
 }
