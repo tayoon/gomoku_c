@@ -57,13 +57,12 @@ int judge_5(int dir_y, int dir_x, int i){
   int go = 1;
 
   while(1){
-    if(board[y - dy[i]*go][x + dx[i]*go]==2)rev++;
-    if(board[y - dy[i]*go][x + dx[i]*go]==0)break;
+    if(board[y - dy[i]*go][x - dx[i]*go] == 2)rev++;
+    if(board[y - dy[i]*go][x - dx[i]*go] == 0)break;
     go++;
   }
 
   go = 1;
-  int cnt_flag = 0;
 
   while(1){
 		if(board[y + dy[i]*go][x + dx[i]*go] == 2)count++;
