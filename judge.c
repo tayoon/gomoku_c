@@ -6,6 +6,17 @@ extern int board[15][15];
 int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 
+char direction[8][256] = {
+  {"Left Up"},
+  {"Up"},
+  {"Right Up"},
+  {"Left"},
+  {"Right"},
+  {"Left Down"},
+  {"Down"},
+  {"Right Down"}
+};
+
 int judge(int dir_y, int dir_x, int i){
   int count = 0;
   int a_cnt = 0;
@@ -17,8 +28,8 @@ int judge(int dir_y, int dir_x, int i){
   int go = 1;
 
   while(1){
-    if(board[y - dy[i]*go][x + dx[i]*go]==2)rev++;
-    if(board[y - dy[i]*go][x + dx[i]*go]==0)break;
+    if(board[y - dy[i]*go][x - dx[i]*go]==2)rev++;
+    if(board[y - dy[i]*go][x - dx[i]*go]==0)break;
     go++;
   }
 
@@ -108,7 +119,7 @@ int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 
 	printf("3: %d, 4: %d, 5: %d, 6: %d\n", ban3_cnt, ban4_cnt, five_cnt, ban6_cnt);
 	for(i = 0; i < 8; i++){
-    printf("%d,%d -> %d\n",dx[i],dy[i],num[i]);
+    printf("%s -> %d\n",direction[i],num[i]);
   }
 	if(ban3_cnt >= 2 || ban4_cnt >= 2 || (ban6_cnt && !five_cnt))return 0;
 	else return 1;

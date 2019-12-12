@@ -137,7 +137,7 @@ int main(void) {
 				int i,j;
 				for(i = 14; i >= 0; i--){
 					for(j = 14; j >= 0; j--){
-						printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
+						// printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
 						if(board[j][i])break;
 					}
 					if(board[j][i])break;
