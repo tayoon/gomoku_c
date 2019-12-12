@@ -14,43 +14,78 @@ int judge(int dir_y, int dir_x, int i){
   int x = dir_x-1;
   int y = dir_y-1;
 
-	if(board[y - dy[i]][x - dx[i]] == 2){
-    rev++;
-    if(board[y - dy[i]*2][x - dx[i]*2] == 2)rev++;	//逆方向
-  }
   int go = 1;
 
   while(1){
-		if(!board[y + dy[i]*go][x + dx[i]*go] && !a_cnt){
-      go++;
-			if(!board[y + dy[i]*go][x + dx[i]*go])break;
-			else if(board[y + dy[i]*go][x + dx[i]*go] == 2)a_cnt++;
-		}else if(board[y + dy[i]*go][x + dx[i]*go] == 2){
-			count++;
-			go++;
-		}else break;
+    if(board[y - dy[i]*go][x + dx[i]*go]==2)rev++;
+    if(board[y - dy[i]*go][x + dx[i]*go]==0)break;
+    go++;
+  }
+
+  go = 1;
+  int cnt_flag = 0;
+
+  while(1){
+		if(board[y + dy[i]*go][x + dx[i]*go] == 2)count++;
+		if(board[y + dy[i]*go][x + dx[i]*go] == 0)cnt_flag++;
+		if(cnt_flag==2)break;
+    go++;
 	}
 
-	if(!board[y + dy[i]][x + dx[i]] && board[y + dy[i]*2][x + dx[i]*2] == 2)return count + rev;
-	else return count;
+  return count + rev;
 }
 
+int judge_5(int dir_y, int dir_x, int i){
+  int count = 0;
+  int a_cnt = 0;
+  int rev = 0;
+
+  int x = dir_x-1;
+  int y = dir_y-1;
+
+  int go = 1;
+
+  while(1){
+    if(board[y - dy[i]*go][x + dx[i]*go]==2)rev++;
+    if(board[y - dy[i]*go][x + dx[i]*go]==0)break;
+    go++;
+  }
+
+  go = 1;
+  int cnt_flag = 0;
+
+  while(1){
+		if(board[y + dy[i]*go][x + dx[i]*go] == 2)count++;
+		if(board[y + dy[i]*go][x + dx[i]*go] == 0)break;
+    go++;
+	}
+
+  return count + rev;
+}
 
 int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 	int ban3_cnt = 0, ban4_cnt = 0, ban6_cnt = 0, five_cnt = 0;
-	int a, b, c, d, e, f, g, h;
   int num[8];
+  int jud5[4];
   int i = 0;
   for (i = 0; i < 8; i++){
     num[i] = judge(dir_y,dir_x,i);
+  }
+  for(i = 0; i < 4; i++){
+    jud5[i] = judge_5(dir_y,dir_x,i);
   }
 
   for(i = 0; i < 8; i++){
     switch(num[i]){
       case 2:ban3_cnt++;break;
       case 3:ban4_cnt++;break;
-      case 4:five_cnt++;break;
-      case 5:ban6_cnt++;break;
+      default: break;
+    }
+  }
+  for(i = 0; i < 4; i++){
+    switch(jud5[i]){
+      case 4:five_cnt++;
+      case 5:ban6_cnt++;
       default: break;
     }
   }

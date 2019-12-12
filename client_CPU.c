@@ -104,37 +104,46 @@ int main(void) {
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
 			board[enemy_y-1][enemy_x-1] = 2;
-			/************以下にロジックを書く********/
+			/************以下にロジックを書く**
+			 * ******/
 			if(ban)if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
 
 			while(1){
-				int i, j;
+				int yy = 0, xx = 0;
 				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(board[i][j])break;
+				for(yy = 0; yy < 15; yy++){
+					for(xx = 0; xx < 15; xx++){
+						if(board[yy][xx])break;
 					}
-					if(board[i][j]){printf("y: %d, x: %d\n", i, j);y_start = i + 1;break;}
+					if(board[yy][xx])break;
 				}
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(board[j][i])break;
+
+				printf("y: %d, x: %d\n", yy, xx);y_start = yy + 1;
+				for(xx = 0; xx < 15; xx++){
+					for(yy = 0; yy < 15; yy++){
+						if(board[yy][xx])break;
 					}
-					if(board[j][i]){printf("x: %d, y: %d\n", i, j);x_start = i + 1;break;}
+					if(board[yy][xx])break;
 				}
+				printf("y: %d, x: %d\n", yy, xx);x_start = xx + 1;
+
+				for(yy = 14; yy >= 0; yy--){
+					for(xx = 14; xx >= 0; xx--){
+						if(board[yy][xx])break;
+					}
+					if(board[yy][xx])break;
+				}
+				printf("y: %d, x: %d\n", yy, xx);y_end = yy + 1;
+				int i,j;
 				for(i = 14; i >= 0; i--){
 					for(j = 14; j >= 0; j--){
-						if(board[i][j])break;
-					}
-					if(board[i][j]){printf("y: %d, x: %d\n", i, j);y_end = i + 1;break;}
-				}
-				for(i = 14; i >= 0; i--){
-					for(j = 14; j >= 0; j--){
-						//printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
+						printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
 						if(board[j][i])break;
 					}
-					if(board[j][i]){printf("x: %d, y: %d\n", i, j);x_end = i + 1;break;}
+					if(board[j][i])break;
 				}
+				printf("y: %d, x: %d\n", j, i);x_end = i + 1;
+
 				printf("start: x = %d, y = %d\n", x_start - 1, y_start - 1);
 				printf("end: x = %d, y = %d\n", x_end + 1, y_end + 1);
 
