@@ -3,7 +3,8 @@
 #include <string.h>
 #include <winsock2.h>
 #include <time.h>
-#include <judge.c>
+#include "judge.h"
+#include "judge.c"
 
 int board[15][15];
 
@@ -24,7 +25,7 @@ int main(void) {
 	//サーバの情報を入力
 	char destination[256];
 	//scanf("%s",destination);
-	sprintf(destination,"172.24.14.220");		//自分のPCのIPアドレス
+	sprintf(destination,"127.0.0.1");		//自分のPCのIPアドレス
 	char port_char[256];
 	int start_flag, white_flag, ban;
 	if(!strcmp("black",str)){
