@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "judge.c"
+#include <limits.h>
+
+int maxlevel(int deepth, int x, int y);
+int minlevel(int deepth, int x, int y);
 
 extern int board[15][15];
-extern int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-extern int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+extern int dx[8];
+extern int dy[8];
 
 int maxlevel(int deepth, int x, int y){
     board[y][x] = 1;        //仮に置く(自分)

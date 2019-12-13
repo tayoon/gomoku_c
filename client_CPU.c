@@ -159,8 +159,8 @@ int main(void) {
 				for(xx = 0; xx < 15; xx++){
 					for(yy = 0; yy < 15; yy++){
 						if(!board[xx][yy]){			//対象となるのは碁がないマス
-							if(maxlabel(3, xx, yy) > best){
-								best = maxlabel(3, xx, yy);
+							if(maxlevel(3, xx, yy) > best){
+								best = maxlevel(3, xx, yy);
 								best_x = xx, best_y = yy;
 							}
 						}
