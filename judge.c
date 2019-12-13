@@ -1,184 +1,89 @@
-#include <board.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "judge.h"
 
-int board[15][15];
-int dx[8];
-int dy[8];
+extern int board[15][15];
+int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 
-int LeUp_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) + 1][(dir_x-1) + 1] == 2)rev++;if(board[(dir_y-1) + 2][(dir_x-1) + 2] == 2)rev++;	//逆方向
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) - go][(dir_x-1) - go] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) - go][(dir_x-1) - go])break;
-			else if(board[(dir_y-1) - go][(dir_x-1) - go] == 2)a_cnt++;
-		}else if(board[(dir_y-1) - go][(dir_x-1) - go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) - 1][(dir_x-1) - 1] && board[(dir_y-1) - 2][(dir_x-1) - 2] == 2)return count + rev;
-	else return count;
+char direction[8][256] = {
+  {"Left Up"},
+  {"Up"},
+  {"Right Up"},
+  {"Left"},
+  {"Right"},
+  {"Left Down"},
+  {"Down"},
+  {"Right Down"}
+};
+
+//二つ空白を見つけると終了
+int judge(int dir_y, int dir_x, int i,int numOfNode,int cnt_flag){
+
+  int y = dir_y + dy[i];
+  int x = dir_x + dx[i];
+
+	if(board[y][x] == 1 || cnt_flag==2 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+	if(board[y][x] == 2)return judge(y,x,i,numOfNode + 1,cnt_flag);
+	if(board[y][x] == 0)return judge(y,x,i,numOfNode,cnt_flag + 1);
 }
 
-int Up_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) + 1][dir_x-1] == 2)rev++;if(board[(dir_y-1) + 2][dir_x-1] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) - go][dir_x-1] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) - go][dir_x-1])break;
-			else if(board[(dir_y-1) - go][dir_x-1] == 2)a_cnt++;
-		}else if(board[(dir_y-1) - go][dir_x-1] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) - 1][dir_x-1] && board[(dir_y-1) - 2][dir_x-1] == 2)return count + rev;
-	else return count;
-}
+//一つでも空白を見つけると終了
+int judge_adj(int dir_y, int dir_x, int i,int numOfNode){
 
-int RiUp_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) + 1][(dir_x-1) - 1] == 2)rev++;if(board[(dir_y-1) + 2][(dir_x-1) - 2] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) - go][(dir_x-1) + go] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) - go][(dir_x-1) + go])break;
-			else if(board[(dir_y-1) - go][(dir_x-1) + go] == 2)a_cnt++;
-		}else if(board[(dir_y-1) - go][(dir_x-1) + go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) - 1][(dir_x-1) + 1] && board[(dir_y-1) - 2][(dir_x-1) + 2] == 2)return count + rev;
-	else return count;
-}
+  int y = dir_y + dy[i];
+  int x = dir_x + dx[i];
 
-int Left_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[dir_y-1][(dir_x-1) + 1] == 2)rev++;if(board[dir_y-1][(dir_x-1) + 2] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[dir_y-1][(dir_x-1) - go] && !a_cnt){
-			go++;
-			if(!board[dir_y-1][(dir_x-1) - go])break;
-			else if(board[dir_y-1][(dir_x-1) - go] == 2)a_cnt++;
-		}else if(board[dir_y-1][(dir_x-1) - go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[dir_y-1][(dir_x-1) - 1] && board[dir_y-1][(dir_x-1) - 2] == 2)return count + rev;
-	else return count;
-}
-
-int Right_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[dir_y-1][(dir_x-1) - 1] == 2)rev++;if(board[dir_y-1][(dir_x-1) - 2] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[dir_y-1][(dir_x-1) + go] && !a_cnt){
-			go++;
-			if(!board[dir_y-1][(dir_x-1) + go])break;
-			else if(board[dir_y-1][(dir_x-1) + go] == 2)a_cnt++;
-		}else if(board[dir_y-1][(dir_x-1) + go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[dir_y-1][(dir_x-1) + 1] && board[dir_y-1][(dir_x-1) + 2] == 2)return count + rev;
-	else return count;
-}
-
-int LeDo_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) - 1][(dir_x-1) + 1] == 2)rev++;if(board[(dir_y-1) - 2][(dir_x-1) + 2] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) + go][(dir_x-1) - go] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) + go][(dir_x-1) - go])break;
-			else if(board[(dir_y-1) + go][(dir_x-1) - go] == 2)a_cnt++;
-		}else if(board[(dir_y-1) + go][(dir_x-1) - go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) + 1][(dir_x-1) + 1] && board[(dir_y-1) + 2][(dir_x-1) + 2] == 2)return count + rev;
-	else return count;
-}
-
-int Down_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) - 1][dir_x-1] == 2)rev++;if(board[(dir_y-1) - 2][dir_x-1] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) + go][dir_x-1] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) + go][dir_x-1])break;
-			else if(board[(dir_y-1) + go][dir_x-1] == 2)a_cnt++;
-		}else if(board[(dir_y-1) + go][dir_x-1] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) + 1][dir_x-1] && board[(dir_y-1) + 2][dir_x-1] == 2)return count + rev;
-	else return count;
-}
-
-int RiDo_judge(int dir_y, int dir_x, int count, int a_cnt){
-	int rev = 0;
-	if(board[(dir_y-1) - 1][(dir_x-1) - 1] == 2)rev++;if(board[(dir_y-1) - 2][(dir_x-1) - 2] == 2)rev++;
-	int go = 1;
-	while(1){
-		if(!board[(dir_y-1) + go][(dir_x-1) + go] && !a_cnt){
-			go++;
-			if(!board[(dir_y-1) + go][(dir_x-1) + go])break;
-			else if(board[(dir_y-1) + go][(dir_x-1) + go] == 2)a_cnt++;
-		}else if(board[(dir_y-1) + go][(dir_x-1) + go] == 2){
-			count++;
-			go++;
-		}else break;
-	}
-	if(!board[(dir_y-1) + 1][(dir_x-1) + 1] && board[(dir_y-1) + 2][(dir_x-1) + 2] == 2)return count + rev;
-	else return count;
+	if(board[y][x] == 2)return judge_adj(y,x,i,numOfNode + 1);
+	if(board[y][x] == 1 || board[y][x] == 0 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 }
 
 int ban_judge(int dir_y, int dir_x){		//board[dir_y-1][dir_x-1]のジャッジ
 	int ban3_cnt = 0, ban4_cnt = 0, ban6_cnt = 0, five_cnt = 0;
-	int a, b, c, d, e, f, g, h;
+  int jud_num[8] = {0,0,0,0,0,0,0,0};
+  int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
+  int jud_5[4] = {0,0,0,0};
+  int i = 0,j = 0;
 
-	if((a = Left_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((b = Right_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((c = Up_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((d = Down_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((e = RiUp_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((f = LeDo_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((g = LeUp_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
-	if((h = RiDo_judge(dir_y, dir_x, 0, 0)) >= 2)ban3_cnt++;
+  int y = dir_y - 1;
+  int x = dir_x - 1;
 
-	if(a >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(b >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(c >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(d >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(e >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(f >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(g >= 3){ban3_cnt = 0;ban4_cnt++;}
-	if(h >= 3){ban3_cnt = 0;ban4_cnt++;}
+  //連続しているかは関係なく33,44を見つける用
+  for (i = 0; i < 8; i++){
+    show_num[i] = judge(y,x,i,0,0);
+    jud_num[i] = show_num[i] + judge_adj(y,x,(7-i),0);
+  }
 
-	//if(a >= 4 || b >= 4 || c >= 4 || d >= 4 || e >= 4 || f >= 4 || g >= 4 || h >= 4){ban4_cnt = 0;five_cnt++;}
-	if(a >= 5 || b >= 5 || c >= 5 || d >= 5 || e >= 5 || f >= 5 || g >= 5 || h >= 5){
-		if(five_cnt != ban6_cnt)five_cnt++;
-		else if(five_cnt == ban6_cnt)ban6_cnt++;
-	}
-	
+  //連続したノードを見つける用
+  for(i = 0; i < 4; i++){
+    jud_5[i] = judge_adj(y,x,i,0) + judge_adj(y,x,(7-i),0);
+  }
+
+  //連続しているかに関わらず33,44を判断
+  for(i = 0; i < 8; i++){
+    switch(jud_num[i]){
+      case 2:ban3_cnt++; break;
+      case 3:ban4_cnt++; break;
+      default: break;
+    }
+  }
+
+  //連続している5連,長連を判断
+  //また連続している33,44は重複しているので引く
+  for(i = 0; i < 4; i++){
+    switch(jud_5[i]){
+      case 2:ban3_cnt--; break;
+      case 3:ban4_cnt--; break;
+      case 4:five_cnt++; break;
+      case 5:ban6_cnt++; break;
+      default: break;
+    }
+  }
+  //見かけ上のノード数
+	for(i = 0; i < 8; i++){printf("%s -> %d\n",direction[i],show_num[i]);}
 	printf("3: %d, 4: %d, 5: %d, 6: %d\n", ban3_cnt, ban4_cnt, five_cnt, ban6_cnt);
-	printf("leup: %d, up: %d, riup: %d, left: %d, right: %d, ledo: %d, down: %d, rido: %d\n",
-			a, b, c, d, e, f, g, h);
-	if(ban3_cnt >= 2 || ban4_cnt >= 2 || ban6_cnt)return 0;
-	else return 1;
+  if(ban3_cnt==2){printf("三三です.\n");return 0;}
+  if(ban4_cnt==2){printf("四四です.\n");return 0;}
+  if(ban6_cnt==2){printf("長連です.\n");return 0;}
+  return 1;
 }
