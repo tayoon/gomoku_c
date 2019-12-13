@@ -5,18 +5,9 @@
 #include <time.h>
 #include "judge.h"
 #include "judge.c"
+#include "alphabeta.c"
 
 int board[15][15];
-
-int maxlevel(int deepth, int alpha, int beta){
-	int score;
-
-	if(deepth == 0){
-		//return 現在の局面の評価値
-	}
-
-	
-}
 
 int main(void) {
 
@@ -77,6 +68,11 @@ int main(void) {
 
 	int x = 0;
 	int y = 0;
+	for(int i = 0; i < 15; i++){
+		for(int j = 0; j < 15; j++){
+			printf("%d\n", board[i][j]);
+		}
+	}
 
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -114,17 +110,12 @@ int main(void) {
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
 			board[enemy_y-1][enemy_x-1] = 2;
-			/************以下にロジックを書く**
-			 * ******/
+			/************以下にロジックを書く*********/
 			if(ban)if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
 
-<<<<<<< HEAD
-			/*while(1){
-				int i, j;
-=======
 			while(1){
+				/*
 				int yy = 0, xx = 0;
->>>>>>> 45493fc63f093cf3900825d29fd260158379ebcc
 				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
 				for(yy = 0; yy < 15; yy++){
 					for(xx = 0; xx < 15; xx++){
@@ -161,7 +152,22 @@ int main(void) {
 
 				printf("start: x = %d, y = %d\n", x_start - 1, y_start - 1);
 				printf("end: x = %d, y = %d\n", x_end + 1, y_end + 1);
-			*/
+				*/
+
+				//全マス調べて、MINMAX
+				int xx, yy, best_x, best_y, best = INT_MIN;
+				for(xx = 0; xx < 15; xx++){
+					for(yy = 0; yy < 15; yy++){
+						if(!board[xx][yy]){			//対象となるのは碁がないマス
+							if(maxlabel(3, xx, yy) > best){
+								best = maxlabel(3, xx, yy);
+								best_x = xx, best_y = yy;
+							}
+						}
+					}
+				}
+				//ここで最適x,y
+				//x = best_x, y = best_y;
 
 				srand((unsigned)time(NULL));
 				x = rand()%15 + 1;
