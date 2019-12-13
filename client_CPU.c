@@ -7,6 +7,16 @@
 
 int board[15][15];
 
+int maxlevel(int deepth, int alpha, int beta){
+	int score;
+
+	if(deepth == 0){
+		//return 現在の局面の評価値
+	}
+
+	
+}
+
 int main(void) {
 
 	//接続するサーバの情報の構造体を用意
@@ -106,7 +116,7 @@ int main(void) {
 			/************以下にロジックを書く********/
 			if(ban)if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
 
-			while(1){
+			/*while(1){
 				int i, j;
 				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
 				for(i = 0; i < 15; i++){
@@ -136,6 +146,7 @@ int main(void) {
 				}
 				printf("start: x = %d, y = %d\n", x_start - 1, y_start - 1);
 				printf("end: x = %d, y = %d\n", x_end + 1, y_end + 1);
+			*/
 
 				srand((unsigned)time(NULL));
 				x = rand()%15 + 1;
