@@ -69,6 +69,7 @@ int main(void) {
 
 	int x = 0;
 	int y = 0;
+	/*
 	for(int i = 0; i < 17; i++){
 		for(int j = 0; j < 17; j++){
 			if(i == 0 || i == 16 || j == 0 || j == 16)board[i][j] = -1;
@@ -76,6 +77,7 @@ int main(void) {
 		}
 		printf("\n");
 	}
+	*/
 
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -179,8 +181,8 @@ int main(void) {
 				for(xx = x_start-1; xx <= x_end+1; xx++){
 					for(yy = y_start-1; yy <= y_end+1; yy++){
 						if(!board[xx][yy]){			//対象となるのは碁がないマス
-							if(maxlevel(3, xx, yy) > best){
-								best = maxlevel(3, xx, yy);
+							if(maxlevel(3, xx, yy, INT_MAX, INT_MIN) > best){
+								best = maxlevel(3, xx, yy, INT_MAX, INT_MIN);
 								best_x = xx, best_y = yy;
 							}
 						}

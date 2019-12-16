@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <limits.h>
 
-int maxlevel(int depth, int x, int y);
-int minlevel(int depth, int x, int y);
+//int maxlevel(int depth, int x, int y);
+//int minlevel(int depth, int x, int y);
+int maxlevel(int depth, int x, int y, int alpha, int beta);
+int minlevel(int depth, int x, int y, int alpha, int beta);
 
 extern int board[17][17];
 extern int dx[8];
 extern int dy[8];
-extern int ban3_cnt, ban4_cnt, five_cnt, ban6_cnt;
 
 //評価
 int value(int x, int y){
@@ -27,6 +28,7 @@ int enemy_value(int x, int y){
     return 0;
 }
 
+/*
 int maxlevel(int depth, int x, int y){
     board[y][x] = 1;        //仮に置く(自分)
     int max = INT_MIN;
@@ -34,10 +36,6 @@ int maxlevel(int depth, int x, int y){
 
 	if(depth == 0){            //一番低い子ノード
         //評価
-        /*
-		if(!ban_judge(x, y))return -100;    //禁じ手-100
-        else return 100;                    //その他+100(適当)
-        */
         return value(x, y);
 	}
 
@@ -59,10 +57,6 @@ int minlevel(int depth, int x, int y){
 
     if(depth == 0){            //一番低い子ノード
         //評価(相手)
-        /*
-		if(!ban_judge(x, y))return 100;    //禁じ手+100
-        else return -100;                  //その他-100(適当)
-        */
         return enemy_value(x, y);
 	}
 
@@ -75,4 +69,53 @@ int minlevel(int depth, int x, int y){
     }
     board[y][x] = 0;        //手を戻す
     return min;
+}
+*/
+
+int maxlevel(int depth, int x, int y, int alpha, int beta){
+    board[y][x] = 1;        //仮に置く(自分)
+	int score;
+
+	if(depth == 0){            //一番低い子ノード
+        //評価
+        board[y][x] = 0;        //手を戻す
+        return value(x, y);
+	}
+
+	for(int i = 0; i < 8; i++){             //注目しているマスの周り8マスを調査
+        if(board[y+dy[i]][x+dx[i]])continue;        //既にあったらパス
+        score = minlevel(depth-1, x+dx[i], y+dy[i], alpha, beta);
+        if(score >= alpha){
+            alpha = score;
+            if(alpha <= beta)break;
+        }
+    }
+    board[y][x] = 0;        //手を戻す
+    if(alpha <= beta)return beta;
+    return alpha;
+}
+
+//alpha
+int minlevel(int depth, int x, int y, int alpha, int beta){
+    board[y][x] = 2;        //仮に置く(相手)
+    int score;
+
+    if(depth == 0){            //一番低い子ノード
+        //評価(相手)
+        board[y][x] = 0;        //手を戻す
+        return enemy_value(x, y);
+	}
+
+    for(int i = 0; i < 8; i++){
+        if(board[y+dy[i]][x+dx[i]])continue;
+        score = maxlevel(depth-1, x+dx[i], y+dy[i], alpha, beta);
+        if(score <= beta){
+            beta = score;
+            if(beta <= alpha)break;
+        }
+        
+    }
+    board[y][x] = 0;        //手を戻す
+    if(beta <= alpha)return alpha;
+    return beta;
 }
