@@ -135,7 +135,7 @@ int main(void) {
 					}
 					if(board[yy][xx])break;
 				}
-				printf("y: %d, x: %d\n", yy, xx);//y_start = yy + 1;
+				//printf("y: %d, x: %d\n", yy, xx);//y_start = yy + 1;
 				y_start = yy;
 				
 				//for(xx = 0; xx < 15; xx++){
@@ -146,7 +146,7 @@ int main(void) {
 					}
 					if(board[yy][xx])break;
 				}
-				printf("y: %d, x: %d\n", yy, xx);//x_start = xx + 1;
+				//printf("y: %d, x: %d\n", yy, xx);//x_start = xx + 1;
 				x_start = xx;
 
 				//for(yy = 14; yy >= 0; yy--){
@@ -157,7 +157,7 @@ int main(void) {
 					}
 					if(board[yy][xx])break;
 				}
-				printf("y: %d, x: %d\n", yy, xx);//y_end = yy + 1;
+				//printf("y: %d, x: %d\n", yy, xx);//y_end = yy + 1;
 				y_end = yy;
 				
 				//for(xx = 14; xx >= 0; xx--){
@@ -169,28 +169,30 @@ int main(void) {
 					}
 					if(board[yy][xx])break;
 				}
-				printf("y: %d, x: %d\n", yy, xx);//x_end = xx + 1;
+				//printf("y: %d, x: %d\n", yy, xx);//x_end = xx + 1;
 				x_end = xx;
 
-				printf("start: x = %d, y = %d\n", x_start - 1, y_start - 1);
-				printf("end: x = %d, y = %d\n", x_end + 1, y_end + 1);
+				printf("start: x = %d, y = %d\n", x_start, y_start);
+				printf("end: x = %d, y = %d\n", x_end, y_end);
 				
 
 				//範囲決めて、MINMAX
-				int best_x, best_y, best = INT_MIN;
-				for(xx = x_start-1; xx <= x_end+1; xx++){
-					for(yy = y_start-1; yy <= y_end+1; yy++){
+				int best_x, best_y;
+				for(xx = x_start; xx <= x_end; xx++){
+					for(yy = y_start; yy <= y_end; yy++){
+						int best = INT_MIN;
 						if(!board[xx][yy]){			//対象となるのは碁がないマス
-							if(maxlevel(3, xx, yy, INT_MAX, INT_MIN) > best){
-								best = maxlevel(3, xx, yy, INT_MAX, INT_MIN);
+							if(maxlevel(3, xx, yy, 0, 0) > best){
+								best = maxlevel(3, xx, yy, 0, 0);
 								best_x = xx, best_y = yy;
+								printf("x: %d, y: %d, point: %d\n", best_x, best_y, best);
 							}
 						}
 					}
 				}
 				//ここで最適x,y
 				x = best_x, y = best_y;
-				printf("x: %d, y: %d\n", x, y);
+				//printf("x: %d, y: %d\n", x, y);
 
 				/*
 				srand((unsigned)time(NULL));
