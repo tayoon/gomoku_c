@@ -183,6 +183,7 @@ int main(void) {
 						int best = INT_MIN;
 						if(!board[xx][yy]){			//対象となるのは碁がないマス
 							if(maxlevel(3, xx, yy, 0, 0) > best){
+								best = maxlevel(3, xx, yy, 0, 0);
 								best_x = xx, best_y = yy;
 								printf("x: %d, y: %d, point: %d\n", best_x, best_y, best);
 							}
