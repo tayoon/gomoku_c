@@ -14,18 +14,22 @@ extern int dy[8];
 //評価
 int value(int x, int y){
     if(!ban_judge(x, y))return -100;
-    if(win_judge(x, y, 1) == 3)return 50;
-    if(win_judge(x, y, 1) == 4)return 80;
-    if(win_judge(x, y, 1) == 5)return 100;
-    return 0;
+    switch(win_judge(x, y, 1)){
+        case 3: return 50;
+        case 4: return 80;
+        case 5: return 100;
+        default: return 0;
+    }
 }
 
 int enemy_value(int x, int y){
     if(!ban_judge(x, y))return 100;
-    if(win_judge(x, y, 2) == 3)return -50;
-    if(win_judge(x, y, 2) == 4)return -80;
-    if(win_judge(x, y, 2) == 5)return -100;
-    return 0;
+    switch(win_judge(x, y, 2)){
+        case 3: return -50;
+        case 4: return -80;
+        case 5: return -100;
+        default: return 0;
+    }
 }
 
 /*
