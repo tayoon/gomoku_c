@@ -7,8 +7,10 @@
 #include "judge.c"
 #include "alphabeta.c"
 
-//int board[15][15];
-int board[17][17];
+int board[15][15];
+int value_board[15][15];
+int my_num = 1;
+int enemy_num = 2;
 
 int main(void) {
 
@@ -118,92 +120,72 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			board[enemy_y][enemy_x] = 2;
-			//board[enemy_y-1][enemy_x-1] = 2;
+			board[enemy_y-1][enemy_x-1] = 2;
 			/************以下にロジックを書く*********/
-			if(ban)if(!ban_judge(enemy_y, enemy_x)){printf("end!!");break;}
+			if(ban)if(!ban_judge(enemy_y, enemy_x,enemy_num)){printf("end!!");break;}
 
-			while(1){
-				
-				int yy = 0, xx = 0;
-				int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
-				//for(yy = 0; yy < 15; yy++){
-					//for(xx = 0; xx < 15; xx++){
-				for(yy = 1; yy < 16; yy++){
-					for(xx = 1; xx < 16; xx++){
-						if(board[yy][xx])break;
-					}
+			int yy = 0, xx = 0;
+			int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
+			for(yy = 0; yy < 15; yy++){
+				for(xx = 0; xx < 15; xx++){
 					if(board[yy][xx])break;
 				}
-				//printf("y: %d, x: %d\n", yy, xx);//y_start = yy + 1;
-				y_start = yy;
-				
-				//for(xx = 0; xx < 15; xx++){
-					//for(yy = 0; yy < 15; yy++){
-				for(xx = 1; xx < 16; xx++){
-					for(yy = 1; yy < 16; yy++){
-						if(board[yy][xx])break;
-					}
+				if(board[yy][xx])break;
+			}
+			y_start = yy;
+
+			for(xx = 0; xx < 15; xx++){
+				for(yy = 0; yy < 15; yy++){
 					if(board[yy][xx])break;
 				}
-				//printf("y: %d, x: %d\n", yy, xx);//x_start = xx + 1;
-				x_start = xx;
+				if(board[yy][xx])break;
+			}
 
+			x_start = xx;
+
+
+			for(yy = 14; yy >= 0; yy--){
+				for(xx = 14; xx >= 0; xx--){
+					if(board[yy][xx])break;
+				}
+				if(board[yy][xx])break;
+			}
+			//printf("y: %d, x: %d\n", yy, xx);//y_end = yy + 1;
+			y_end = yy;
+			//for(xx = 14; xx >= 0; xx--){
 				//for(yy = 14; yy >= 0; yy--){
-					//for(xx = 14; xx >= 0; xx--){
-				for(yy = 15; yy >= 1; yy--){
-					for(xx = 15; xx >= 1; xx--){
-						if(board[yy][xx])break;
-					}
+			for(xx = 14; xx >= 0; xx--){
+				for(yy = 14; yy >= 0; yy--){
+					// printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
 					if(board[yy][xx])break;
 				}
-				//printf("y: %d, x: %d\n", yy, xx);//y_end = yy + 1;
-				y_end = yy;
-				
-				//for(xx = 14; xx >= 0; xx--){
-					//for(yy = 14; yy >= 0; yy--){
-				for(xx = 15; xx >= 1; xx--){
-					for(yy = 15; yy >= 1; yy--){
-						// printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
-						if(board[yy][xx])break;
-					}
-					if(board[yy][xx])break;
-				}
-				//printf("y: %d, x: %d\n", yy, xx);//x_end = xx + 1;
-				x_end = xx;
+				if(board[yy][xx])break;
+			}
+			//printf("y: %d, x: %d\n", yy, xx);//x_end = xx + 1;
+			x_end = xx;
 
-				printf("start: x = %d, y = %d\n", x_start, y_start);
-				printf("end: x = %d, y = %d\n", x_end, y_end);
-				
+			printf("start: x = %d, y = %d\n", x_start, y_start);
+			printf("end: x = %d, y = %d\n", x_end, y_end);
 
-				//範囲決めて、MINMAX
-				int best_x, best_y;
-				for(xx = x_start; xx <= x_end; xx++){
-					for(yy = y_start; yy <= y_end; yy++){
-						int best = INT_MIN;
-						if(!board[xx][yy]){			//対象となるのは碁がないマス
-							if(maxlevel(3, xx, yy, 0, 0) > best){
-								best = maxlevel(3, xx, yy, 0, 0);
-								best_x = xx, best_y = yy;
-								printf("x: %d, y: %d, point: %d\n", best_x, best_y, best);
-							}
+			//範囲決めて、MINMAX
+			int best_x, best_y;
+			//225のうち、自分がどこに置くか
+			for(xx = 0; xx < 15; xx++){
+				for(yy = 0; yy < 15; yy++){
+					int best = INT_MIN;
+					if(!board[yy][xx]){
+						// strcpy(value_board,board);		//対象となるのは碁がないマス
+						if(maxlevel(3, xx, yy, my_value(xx,yy)) > best){
+							best = maxlevel(3, xx, yy, my_value(xx,yy));
+							best_x = xx, best_y = yy;
+							printf("x: %d, y: %d, point: %d\n", best_x, best_y, best);
 						}
 					}
 				}
-				//ここで最適x,y
-				x = best_x, y = best_y;
-				//printf("x: %d, y: %d\n", x, y);
-
-				/*
-				srand((unsigned)time(NULL));
-				x = rand()%15 + 1;
-				y = rand()%15 + 1;
-				*/
-				//if(!board[y-1][x-1])break;
-				if(!board[y][x])break;
 			}
-			//board[y-1][x-1] = 1;
-			board[y][x] = 1;
+			//ここで最適x,y
+			x = best_x, y = best_y;
+			board[y-1][x-1] = 1;
 			/*************ロジックここまで***********/
 		}
 		sprintf(msg,"%d,%d",x,y);
