@@ -1,1 +1,1 @@
-extern int ban_judge(int dir_y,int dir_x,int kei);
+extern int ban_judge(int dir_y,int dir_x,int player_num);

@@ -17,7 +17,7 @@ extern int enemy_num;
 //評価
 int my_value(int x, int y){
     if(!ban_judge(x, y, my_num))return -100;
-    switch(win_judge(x, y, my_num)){
+    switch(get_value(x, y, my_num)){
         case 2: return 50;
         case 3: return 80;
         case 4: return 100;
@@ -28,7 +28,7 @@ int my_value(int x, int y){
 
 int enemy_value(int x, int y){
     if(!ban_judge(x, y,enemy_num))return 100;
-    switch(win_judge(x, y, enemy_num)){
+    switch(get_value(x, y, enemy_num)){
         case 2: return -50;
         case 3: return -80;
         case 4: return -100;
