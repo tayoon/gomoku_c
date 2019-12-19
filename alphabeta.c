@@ -22,7 +22,7 @@ int my_value(int x, int y){
         case 3: return 80;
         case 4: return 100;
         case 5: return 100000;
-        default: return 0;
+        default: return 1;
     }
 }
 
@@ -33,7 +33,7 @@ int enemy_value(int x, int y){
         case 3: return -80;
         case 4: return -100;
         case 5: return -100000;
-        default: return 0;
+        default: return -1;
     }
 }
 
@@ -42,24 +42,26 @@ int maxlevel(int depth, int x, int y,int value){
 
     board[y][x] = my_num;        //仮に置く(自分)
     int max = INT_MIN;
-	int score;
+
 	if(depth == 0){            //一番低い子ノード
         //評価
         board[y][x] = 0;
-        return my_value(x, y);
+        printf("maxlevel----------depth-> %d,value->%d,x->%d,y->%d\n",depth,value,x+1,y+1);
+        return value;
 	}
     //相手が225のうち、どこに置くか
     int xx = 0,yy = 0;
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
             if(!board[yy][xx]){
-                score = minlevel(depth-1,xx,yy,value + enemy_value(xx,yy));
+                int score = minlevel(depth-1,xx,yy,value + enemy_value(xx,yy));
+                if(max < score)max = score;
             }
-            if(max < score)max = score;
         }
     }
 
     board[y][x] = 0;        //手を戻す
+    printf("depth-> %d,max->%d,x->%d,y->%d\n",depth,max,x+1,y+1);
     return max;
 }
 
@@ -67,10 +69,10 @@ int minlevel(int depth, int x, int y,int value){
 
     board[y][x] = enemy_num;        //仮に置く(相手)
     int min = INT_MAX;
-    int score;
 
     if(depth == 0){            //一番低い子ノード
         //評価(相手)
+        printf("minlevel----------depth-> %d,value->%d,x->%d,y->%d\n",depth,value,x+1,y+1);
         board[y][x] = 0;
         return value;
 	}
@@ -78,13 +80,14 @@ int minlevel(int depth, int x, int y,int value){
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
             if(!board[yy][xx]){
-                score = maxlevel(depth-1,xx,yy,value + my_value(xx,yy));
+                int score = maxlevel(depth-1,xx,yy,value + my_value(xx,yy));
+                if(min > score)min = score;
             }
-            if(min > score)min = score;
         }
     }
 
     board[y][x] = 0;        //手を戻す
+    printf("depth-> %d,min->%d,x->%d,y->%d\n",depth,min,x+1,y+1);
     return min;
 }
 

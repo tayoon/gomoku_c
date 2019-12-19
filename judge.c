@@ -47,7 +47,6 @@ int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]ã
 	int three = 0;
   int four = 0;
   int five = 0;
-  int six = 0;
 
   int jud_num[8] = {0,0,0,0,0,0,0,0};
   // int show_num[8] = {0,0,0,0,0,0,0,0};    //è¡¨ç¤ºç”¨
@@ -87,7 +86,6 @@ int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]ã
       case 2:three--; break;
       case 3:four--; break;
       case 4:five++; break;
-      case 5:six++; break;
       default: break;
     }
   }

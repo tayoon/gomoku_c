@@ -1,3 +1,3 @@
-#define SEARCH_START 2
-#define SEARCH_END 14
-#define DEPTH_NUM 3
+#define SEARCH_START 6
+#define SEARCH_END 10
+#define DEPTH_NUM 2

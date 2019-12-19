@@ -176,8 +176,9 @@ int main(void) {
 			for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 				for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 					if(!board[yy][xx]){
-						if(maxlevel(DEPTH_NUM, xx, yy, my_value(xx,yy)) > best){
-							best = maxlevel(DEPTH_NUM, xx, yy, my_value(xx,yy));
+						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy));
+						if(score > best){
+							best = score;
 							best_x = xx, best_y = yy;
 							printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
 						}
