@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include "define.h"
 
 int maxlevel(int depth, int x, int y,int value);
 int minlevel(int depth, int x, int y,int value);
@@ -20,6 +21,7 @@ int my_value(int x, int y){
         case 2: return 50;
         case 3: return 80;
         case 4: return 100;
+        case 5: return 100000;
         default: return 0;
     }
 }
@@ -30,6 +32,7 @@ int enemy_value(int x, int y){
         case 2: return -50;
         case 3: return -80;
         case 4: return -100;
+        case 5: return -100000;
         default: return 0;
     }
 }
@@ -38,17 +41,17 @@ int enemy_value(int x, int y){
 int maxlevel(int depth, int x, int y,int value){
 
     board[y][x] = my_num;        //仮に置く(自分)
-    int xx = 0,yy = 0;
+    int max = INT_MIN;
+	int score;
 	if(depth == 0){            //一番低い子ノード
         //評価
         board[y][x] = 0;
         return my_value(x, y);
 	}
-    int max = INT_MIN;
-	int score;
     //相手が225のうち、どこに置くか
-    for(xx = 0; xx < 15; xx++){
-        for(yy = 0; yy < 15; yy++){
+    int xx = 0,yy = 0;
+    for(xx = SEARCH_START; xx < SEARCH_END; xx++){
+        for(yy = SEARCH_START; yy < SEARCH_END; yy++){
             if(!board[yy][xx]){
                 score = minlevel(depth-1,xx,yy,value + enemy_value(xx,yy));
             }
@@ -72,8 +75,8 @@ int minlevel(int depth, int x, int y,int value){
         return value;
 	}
     int xx = 0,yy = 0;
-    for(xx = 0; xx < 15; xx++){
-        for(yy = 0; yy < 15; yy++){
+    for(xx = SEARCH_START; xx < SEARCH_END; xx++){
+        for(yy = SEARCH_START; yy < SEARCH_END; yy++){
             if(!board[yy][xx]){
                 score = maxlevel(depth-1,xx,yy,value + my_value(xx,yy));
             }
