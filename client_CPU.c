@@ -65,22 +65,13 @@ int main(void) {
 	printf("%sに接続しました\n", destination);
 	recv(s,buffer,1024,0);		//文字を受ける
 	printf("recieve : %s\n",buffer);
-	char name[256] = "BOSS";
+	char name[256] = "TAYOON";
 	send(s,name,strlen(name),0);		//名前送信
 	printf("%s\n",name);
 	char msg[256];
 
 	int x = 0;
 	int y = 0;
-	/*
-	for(int i = 0; i < 17; i++){
-		for(int j = 0; j < 17; j++){
-			if(i == 0 || i == 16 || j == 0 || j == 16)board[i][j] = -1;
-			printf("%d", board[i][j]);
-		}
-		printf("\n");
-	}
-	*/
 
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -127,48 +118,6 @@ int main(void) {
 			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){printf("end!!");break;}
 
 			int yy = 0, xx = 0;
-			// int x_start = 0, y_start = 0, x_end = 0, y_end = 0;
-			// for(yy = 0; yy < 15; yy++){
-			// 	for(xx = 0; xx < 15; xx++){
-			// 		if(board[yy][xx])break;
-			// 	}
-			// 	if(board[yy][xx])break;
-			// }
-			// y_start = yy;
-
-			// for(xx = 0; xx < 15; xx++){
-			// 	for(yy = 0; yy < 15; yy++){
-			// 		if(board[yy][xx])break;
-			// 	}
-			// 	if(board[yy][xx])break;
-			// }
-
-			// x_start = xx;
-
-
-			// for(yy = 14; yy >= 0; yy--){
-			// 	for(xx = 14; xx >= 0; xx--){
-			// 		if(board[yy][xx])break;
-			// 	}
-			// 	if(board[yy][xx])break;
-			// }
-			// //printf("y: %d, x: %d\n", yy, xx);//y_end = yy + 1;
-			// y_end = yy;
-			// //for(xx = 14; xx >= 0; xx--){
-			// 	//for(yy = 14; yy >= 0; yy--){
-			// for(xx = 14; xx >= 0; xx--){
-			// 	for(yy = 14; yy >= 0; yy--){
-			// 		// printf("x: %d, y: %d, board: %d\n", i, j, board[j][i]);
-			// 		if(board[yy][xx])break;
-			// 	}
-			// 	if(board[yy][xx])break;
-			// }
-			// //printf("y: %d, x: %d\n", yy, xx);//x_end = xx + 1;
-			// x_end = xx;
-
-			// printf("start: x = %d, y = %d\n", x_start, y_start);
-			// printf("end: x = %d, y = %d\n", x_end, y_end);
-
 			//範囲決めて、MINMAX
 			int best_x, best_y;
 			//225のうち、自分がどこに置くか
@@ -176,7 +125,7 @@ int main(void) {
 			for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 				for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 					if(!board[yy][xx]){
-						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy));
+						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy), 0, 0);
 						if(score > best){
 							best = score;
 							best_x = xx, best_y = yy;
