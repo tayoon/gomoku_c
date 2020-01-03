@@ -118,14 +118,13 @@ int main(void) {
 			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){printf("end!!");break;}
 
 			int yy = 0, xx = 0;
-			//範囲決めて、MINMAX
 			int best_x, best_y;
 			//225のうち、自分がどこに置くか
 			int best = INT_MIN;
 			for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 				for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 					if(!board[yy][xx]){
-						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy), 0, 0);
+						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy), INT_MAX, INT_MIN);
 						if(score > best){
 							best = score;
 							best_x = xx, best_y = yy;
