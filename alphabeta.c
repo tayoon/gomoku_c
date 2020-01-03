@@ -93,7 +93,6 @@ int enemy_value(int x, int y){
 
 
 int first_flag = 1;         //最初の子ノード探索か判断のための値
-int tmp_a, tmp_b;
 int maxlevel(int depth, int x, int y, int value, int alpha, int beta){
     int max = INT_MIN;      //子ノードの最大値
     board[y][x] = my_num;        //仮に置く(自分)
@@ -127,7 +126,6 @@ int maxlevel(int depth, int x, int y, int value, int alpha, int beta){
     }
     first_flag = 0;
     board[y][x] = 0;
-    tmp_b = beta;
     if(score >= beta)return score;          //β値を上回ったらその時の評価値を返す
     return max;                             //最大値を返す
 }
@@ -165,7 +163,6 @@ int minlevel(int depth, int x, int y, int value, int alpha, int beta){
 
     first_flag = 0;
     board[y][x] = 0;
-    tmp_a = alpha;
     if(score <= alpha)return score;         //α値を下回ったらその時の評価値を返す
     return min;                             //最小値を返す
 }
