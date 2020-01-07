@@ -72,6 +72,7 @@ int main(void) {
 
 	int x = 0;
 	int y = 0;
+	extern int alpha, beta;
 
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -121,16 +122,20 @@ int main(void) {
 			int best_x, best_y;
 			//225のうち、自分がどこに置くか
 			int best = INT_MIN;
+			extern int alpha_flag, beta_flag;
 			for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 				for(yy = SEARCH_START; yy < SEARCH_END; yy++){
+					alpha_flag = 1, beta_flag = 1;
 					if(!board[yy][xx]){
-						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy), INT_MAX, INT_MIN);
+						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy));
 						if(score > best){
 							best = score;
 							best_x = xx, best_y = yy;
-							printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
+							//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
 						}
+						printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
 					}
+					printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
 				}
 			}
 			//ここで最適x,y
