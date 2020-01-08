@@ -73,19 +73,21 @@ int main(void) {
 	int x = 0;
 	int y = 0;
 	extern int alpha, beta;
-
+	int start_flag_2;
+	
 	while(1){
 		//何か文字列を受け取るまで待機
 		while(-1 == recv(s, buffer, 1024, 0)){}
 		printf("recieve : %s\n",buffer);
 		//endの文字列を受け取ると終了
 		if(!strcmp("end",buffer))break;
+		int ban_flag = 0;
 		//先手の1手目
 		if(start_flag){
 			x = 8, y = 8;
-			// board[y][x] = 1;
 			board[y-1][x-1] = 1;
 			start_flag = 0;
+			start_flag_2 = 1;
 		}
 		else if(white_flag){
 			char *ptr;
@@ -93,18 +95,38 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			// board[enemy_y][enemy_x] = 2;
 			board[enemy_y-1][enemy_x-1] = 2;
 			while(1){
 				srand((unsigned)time(NULL));
 				x = rand() % 3 + 7;
 				y = rand() % 3 + 7;
-				// if(!board[y][x])break;
 				if(!board[y-1][x-1])break;
 			}
-			// board[y][x] = 1;
 			board[y-1][x-1] = 1;
 			white_flag = 0;
+		}
+		else if(start_flag_2){
+			char *ptr;
+			ptr = strtok(buffer,",");
+			int enemy_x = atoi(ptr);
+			ptr = strtok(NULL,",");
+			int enemy_y = atoi(ptr);
+			board[enemy_y-1][enemy_x-1] = 2;
+
+			if(!(enemy_x-x)){
+				x = enemy_x - 1;
+				y = enemy_y;
+			}
+			else if(!(enemy_y-y)){
+				x = enemy_x;
+				y = enemy_y - 1;
+			}
+			else{
+				if(!((enemy_x-x)-(enemy_y-y))){x = 9; y = 7;}
+				else{x = 7; y = 7;}
+			}
+			board[y-1][x-1] = 1;
+			start_flag_2 = 0;
 		}
 		//先手なら2手目から、後手なら1手目からelse通る
 		else{
@@ -116,7 +138,7 @@ int main(void) {
 			board[enemy_y-1][enemy_x-1] = 2;
 
 			/************以下にロジックを書く*********/
-			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){printf("end!!");break;}
+			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){ban_flag = 1;break;}
 
 			int yy = 0, xx = 0;
 			int best_x, best_y;
@@ -133,9 +155,9 @@ int main(void) {
 							best_x = xx, best_y = yy;
 							//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
 						}
-						printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
+						//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
 					}
-					printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
+					//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
 				}
 			}
 			//ここで最適x,y
@@ -152,8 +174,8 @@ int main(void) {
 			}
 			printf("\n");
 		}
-
-		sprintf(msg,"%d,%d",x,y);
+		if(ban_flag)sprintf(msg, "%s", "forbidden");
+		else sprintf(msg,"%d,%d",x,y);
 		printf("send : %s\n",msg);
 		while(-1 == send(s, msg, strlen(msg), 0)){}
 	}
