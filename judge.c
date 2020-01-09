@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "define.h"
 #include "judge.h"
 
 extern int board[15][15];
@@ -29,6 +30,7 @@ int search(int x, int y, int i,int numOfNode,int cnt_flag, int player_num){     
 	if(board[y][x] == (2/player_num) || cnt_flag==2)return numOfNode;
 	if(board[y][x] == 1*player_num)return search(x,y,i,numOfNode + 1,cnt_flag,player_num);
 	if(board[y][x] == 0)return search(x,y,i,numOfNode,cnt_flag + 1,player_num);
+  return 0;
 }
 
 int addValuesBySearch(int *x,int *y,int i,int numOfNode,int cnt_flag, int playerNum,int *backFlag){
@@ -36,44 +38,132 @@ int addValuesBySearch(int *x,int *y,int i,int numOfNode,int cnt_flag, int player
   (*x) += dx[i];
   (*y) += dy[i];
 
-  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/playerNum) || cnt_flag==2)return numOfNode;
-  if(board[y][x] == 1*playerNum && cnt_flag==1){*backFlag++;return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);}
-	if(board[y][x] == 1*playerNum)return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);
-	if(board[y][x] == 0)return addValuesBySearch(x,y,i,numOfNode,cnt_flag + 1,playerNum,backFlag);
+  if(((*x) < 0 || (*y) < 0) || ((*x) > 14 || (*y) > 14))return numOfNode;
+	if(board[*y][*x] == (2/playerNum) || cnt_flag==2)return numOfNode;
+  if((board[*y][*x] == 1*playerNum) && (cnt_flag==1)){*backFlag++;return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);}
+	if(board[*y][*x] == 1*playerNum)return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);
+	if(board[*y][*x] == 0)return addValuesBySearch(x,y,i,numOfNode,cnt_flag + 1,playerNum,backFlag);
+  return 0;
 }
+
+void getValuesBoard(){
+  int x = 0,y = 0;
+  for(y = 0; y < 15; y++){
+    for(x = 0; x < 15; x++){
+      printf(" %d ",value_board[y][x]);
+    }
+    printf("\n");
+  }
+}
+
+void setValueBoard(int x,int y, int num){
+  int i = 0,j = 0;
+  for(i = y-1; i <= y+1; i++){
+    if(i < 0 || i > 14)continue;
+    for(j = x-1; j <= x+1; j++){
+      if(j < 0 || j > 14)continue;
+      if(num==1)value_board[i][j]++;
+      if(num==2)value_board[i][j]--;
+    }
+  }
+
+  for(i = 0; i < 4; i++){
+
+    int fx = x,fy = y;
+    int bx = x,by = y;
+    int backFlag = 0;
+    int backFlag2 = 0;
+
+    int numOfNode = addValuesBySearch(&fx,&fy,i,1,0,num,&backFlag) + addValuesBySearch(&bx,&by,(7-i),1,0,num,&backFlag2)-1;
+    if(numOfNode >= 2){
+      if(backFlag==0)fx-=dx[i];fy-=dy[i];
+      if(backFlag2==0)bx-=dx[7-i];by-=dy[7-i];
+      fx-=dx[i];
+      fy-=dy[i];
+      bx-=dx[7-i];
+      by-=dy[7-i];
+      // printf("\nfx->%d,fy->%d,backFlag->%d\n",fx,fy,backFlag);
+      // printf("bx->%d,by->%d,backFlag2->%d\n\n",bx,by,backFlag2);
+      value_board[fy][fx] += (numOfNode)*(numOfNode);
+      value_board[by][bx] += (numOfNode)*(numOfNode);
+    }
+  }
+
+  // getValuesBoard();
+}
+
+int checkWin(int num){
+  int x = 0,y = 0;
+  int i = 0;
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(board[y][x]!=0)continue;
+      for(i = 0; i < 4; i++){
+        int numOfNode = search(x,y,i,0,1,num) + search(x,y,(7-i),0,1,num);
+        if(numOfNode==4)return 1;       //大勝利！！！！！！！！！！
+      }
+    }
+  }
+  return 0;
+}
+
+void getBoard(){
+  int i,j;
+  for(i = 0; i < 15;i++){
+		for(j = 0; j < 15; j++){
+			printf("%d ",board[i][j]);
+		}
+		printf("\n");
+  }
+}
+
+void resetValueBoard(int x,int y, int num){
+  int i = 0,j = 0;
+  for(i = y-1; i <= y+1; i++){
+    if(i < 0 || i > 14)continue;
+    for(j = x-1; j <= x+1; j++){
+      if(j < 0 || j > 14)continue;
+      if(num==1)value_board[i][j]--;
+      if(num==2)value_board[i][j]++;
+    }
+  }
+
+  for(i = 0; i < 4; i++){
+
+    int fx = x,fy = y;
+    int bx = x,by = y;
+    int backFlag = 0;
+    int backFlag2 = 0;
+
+    int numOfNode = addValuesBySearch(&fx,&fy,i,1,0,num,&backFlag) + addValuesBySearch(&bx,&by,(7-i),1,0,num,&backFlag2)-1;
+    if(numOfNode >= 2){
+      if(backFlag==0)fx-=dx[i];fy-=dy[i];
+      if(backFlag2==0)bx-=dx[7-i];by-=dy[7-i];
+      fx-=dx[i];
+      fy-=dy[i];
+      bx-=dx[7-i];
+      by-=dy[7-i];
+      // printf("\nfx->%d,fy->%d,backFlag->%d\n",fx,fy,backFlag);
+      // printf("bx->%d,by->%d,backFlag2->%d\n\n",bx,by,backFlag2);
+      value_board[fy][fx] -= (numOfNode)*(numOfNode);
+      value_board[by][bx] -= (numOfNode)*(numOfNode);
+    }
+  }
+
+  // getValuesBoard();
+}
+
 
 void setBoard(int x,int y,int num){
   board[y][x] = num;
   setValueBoard(x,y,num);
 }
 
-void setValueBoard(int x,int y, int num){
-  int i = 0,j = 0;
-  for(i = y-1; i <= y+1; i++){
-    for(j = x-1; j <= x+1; j++){
-      if(num==1)value_board[i][j]++;
-      if(num==2)value_board[i][j]--;
-    }
-  }
 
-  int fx,fy;
-  int bx,by;
-  int backFlag;
-  int backFlag2;
-
-  for(i = 0; i < 4; i++){
-    int numOfNode = addValuesBySearch(&fx,&fy,i,1,0,num,&backFlag) + addValuesBySearch(&bx,&by,(7-i),0,0,num,&backFlag2);
-    if(numOfNode >= 1){
-      if(!backFlag)fx-=dx[i];fy-=dy[i]; 
-      if(!backFlag2)bx-=dx[i];by-=dy[i];
-
-      value_board[fy][fx] += (numOfNode)*(numOfNode);
-      value_board[by][bx] += (numOfNode)*(numOfNode);
-    }
-  }
+void resetBoard(int x,int y,int num){
+  board[y][x] = 0;
+  resetValueBoard(x,y,num);
 }
-
 //置こうとしているマスの周り確認（優位性）<- ban_judgeを利用
 int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
 	int second = 0;

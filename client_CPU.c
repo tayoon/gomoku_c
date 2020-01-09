@@ -10,8 +10,7 @@
 
 int board[15][15];
 int value_board[15][15];
-int my_num = 1;
-int enemy_num = 2;
+extern int alpha_flag, beta_flag;
 
 int main(void) {
 
@@ -83,10 +82,11 @@ int main(void) {
 		//endの文字列を受け取ると終了
 		if(!strcmp("end",buffer))break;
 		int ban_flag = 0;
+		int win_flag = 0;
 		//先手の1手目
 		if(start_flag){
 			x = 8, y = 8;
-			setBoard(x-1,y-1,my_num);
+			setBoard(x-1,y-1,MY_NUM);
 			start_flag = 0;
 			start_flag_2 = 1;
 		}
@@ -96,15 +96,15 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,enemy_num);
-			
+			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
+
 			while(1){
 				srand((unsigned)time(NULL));
 				x = rand() % 3 + 7;
 				y = rand() % 3 + 7;
 				if(!board[y-1][x-1])break;
 			}
-			setBoard(x-1,y-1,my_num);
+			setBoard(x-1,y-1,MY_NUM);
 			white_flag = 0;
 		}
 		else if(start_flag_2){
@@ -113,7 +113,7 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,enemy_num);
+			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
 
 			if(!(enemy_x-x)){
 				x = enemy_x - 1;
@@ -127,7 +127,7 @@ int main(void) {
 				if(!((enemy_x-x)-(enemy_y-y))){x = 9; y = 7;}
 				else{x = 7; y = 7;}
 			}
-			setBoard(x-1,y-1,my_num);
+			setBoard(x-1,y-1,MY_NUM);
 			start_flag_2 = 0;
 		}
 		//先手なら2手目から、後手なら1手目からelse通る
@@ -137,47 +137,45 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,enemy_num);
+			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
 
 			/************以下にロジックを書く*********/
-			//禁じ手判定
-			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){ban_flag = 1;break;}
-
-			int yy = 0, xx = 0;
-			int best_x, best_y;
-			//225のうち、自分がどこに置くか
-			int best = INT_MIN;
-			extern int alpha_flag, beta_flag;
-			for(xx = SEARCH_START; xx < SEARCH_END; xx++){
-				for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-					alpha_flag = 1, beta_flag = 1;
-					if(!board[yy][xx]){
-						int score = maxlevel(DEPTH_NUM,xx,yy,my_value(xx,yy));
-						if(score > best){
-							best = score;
-							best_x = xx, best_y = yy;
-							//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
+			//相手の禁じ手判定
+			if(ban)if(!ban_judge(enemy_x, enemy_y,ENEMY_NUM)){ban_flag = 1;}
+			if(checkWin(MY_NUM)){win_flag = 1;}
+			else{
+				int yy = 0, xx = 0;
+				int best_x, best_y;
+				//225のうち、自分がどこに置くか
+				int best = INT_MIN;
+				for(xx = SEARCH_START; xx < SEARCH_END; xx++){
+					for(yy = SEARCH_START; yy < SEARCH_END; yy++){
+						alpha_flag = 1, beta_flag = 1;
+						if(!board[yy][xx]){
+							if(ban_judge(xx,yy,MY_NUM)){
+								int score = maxlevel(DEPTH_NUM,xx,yy);
+								if(score > best){
+									best = score;
+									best_x = xx, best_y = yy;
+									//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
+								}
+							}//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
 						}
-						//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
+						//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
 					}
-					//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
 				}
+				//ここで最適x,y
+				getValuesBoard();
+				x = best_x, y = best_y;
+				setBoard(x,y,MY_NUM);
+				x++;
+				y++;
+				/*************ロジックここまで***********/
 			}
-			//ここで最適x,y
-			x = best_x, y = best_y;
-			setBoard(x,y,my_num);
-			x++;
-			y++;
-			/*************ロジックここまで***********/
 		}
-		int r,d;
-		for(r = 0; r < 15;r++){
-			for(d = 0; d < 15; d++){
-				printf("%d ",board[r][d]);
-			}
-			printf("\n");
-		}
+		getBoard();
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
+		else if(win_flag)sprintf(msg, "%s", "win");
 		else sprintf(msg,"%d,%d",x,y);
 		printf("send : %s\n",msg);
 		while(-1 == send(s, msg, strlen(msg), 0)){}
