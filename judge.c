@@ -46,7 +46,7 @@ int addValuesBySearch(int *x,int *y,int i,int numOfNode,int cnt_flag, int player
   return 0;
 }
 
-void getValuesBoard(){
+void getValueBoard(){
   int x = 0,y = 0;
   for(y = 0; y < 15; y++){
     for(x = 0; x < 15; x++){
@@ -82,14 +82,12 @@ void setValueBoard(int x,int y, int num){
       fy-=dy[i];
       bx-=dx[7-i];
       by-=dy[7-i];
-      // printf("\nfx->%d,fy->%d,backFlag->%d\n",fx,fy,backFlag);
-      // printf("bx->%d,by->%d,backFlag2->%d\n\n",bx,by,backFlag2);
       value_board[fy][fx] += (numOfNode)*(numOfNode);
       value_board[by][bx] += (numOfNode)*(numOfNode);
     }
   }
 
-  // getValuesBoard();
+  // getValueBoard();
 }
 
 int checkWin(int num){
@@ -150,7 +148,7 @@ void resetValueBoard(int x,int y, int num){
     }
   }
 
-  // getValuesBoard();
+  // getValueBoard();
 }
 
 

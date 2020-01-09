@@ -165,7 +165,7 @@ int main(void) {
 					}
 				}
 				//ここで最適x,y
-				getValuesBoard();
+				getValueBoard();
 				x = best_x, y = best_y;
 				setBoard(x,y,MY_NUM);
 				x++;
