@@ -111,7 +111,7 @@ int maxlevel(int depth, int x, int y, int value){
     int xx = 0,yy = 0;
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-            
+
             if(!board[yy][xx]){
                 //printf("A\n");
                 score = minlevel(depth-1,xx,yy,value + enemy_value(xx,yy));
@@ -151,7 +151,7 @@ int minlevel(int depth, int x, int y, int value){
     int xx = 0,yy = 0;
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-            
+
             if(!board[yy][xx]){
                 score = maxlevel(depth-1,xx,yy,value + my_value(xx,yy));
                 //printf("depth:%d(x:%d, y:%d) <- score:%d(x:%d, y:%d)\n", depth, x+1, y+1, score, xx+1, yy+1);

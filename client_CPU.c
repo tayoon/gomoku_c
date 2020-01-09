@@ -74,7 +74,7 @@ int main(void) {
 	int y = 0;
 	extern int alpha, beta;
 	int start_flag_2;
-	
+
 	while(1){
 		//何か文字列を受け取るまで待機
 		while(-1 == recv(s, buffer, 1024, 0)){}
