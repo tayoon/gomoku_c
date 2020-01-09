@@ -27,6 +27,7 @@ int main(void) {
 		if(!strcmp("black",str) || !strcmp("white",str))break;
 		printf("文字が違います。black or white\n");
 	}
+
 	//サーバの情報を入力
 	char destination[256];
 	//scanf("%s",destination);
@@ -85,7 +86,7 @@ int main(void) {
 		//先手の1手目
 		if(start_flag){
 			x = 8, y = 8;
-			board[y-1][x-1] = 1;
+			setBoard(x-1,y-1,my_num);
 			start_flag = 0;
 			start_flag_2 = 1;
 		}
@@ -95,14 +96,15 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			board[enemy_y-1][enemy_x-1] = 2;
+			setBoard(enemy_x-1,enemy_y-1,enemy_num);
+			
 			while(1){
 				srand((unsigned)time(NULL));
 				x = rand() % 3 + 7;
 				y = rand() % 3 + 7;
 				if(!board[y-1][x-1])break;
 			}
-			board[y-1][x-1] = 1;
+			setBoard(x-1,y-1,my_num);
 			white_flag = 0;
 		}
 		else if(start_flag_2){
@@ -111,7 +113,7 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			board[enemy_y-1][enemy_x-1] = 2;
+			setBoard(enemy_x-1,enemy_y-1,enemy_num);
 
 			if(!(enemy_x-x)){
 				x = enemy_x - 1;
@@ -125,7 +127,7 @@ int main(void) {
 				if(!((enemy_x-x)-(enemy_y-y))){x = 9; y = 7;}
 				else{x = 7; y = 7;}
 			}
-			board[y-1][x-1] = 1;
+			setBoard(x-1,y-1,my_num);
 			start_flag_2 = 0;
 		}
 		//先手なら2手目から、後手なら1手目からelse通る
@@ -135,9 +137,10 @@ int main(void) {
 			int enemy_x = atoi(ptr);
 			ptr = strtok(NULL,",");
 			int enemy_y = atoi(ptr);
-			board[enemy_y-1][enemy_x-1] = 2;
+			setBoard(enemy_x-1,enemy_y-1,enemy_num);
 
 			/************以下にロジックを書く*********/
+			//禁じ手判定
 			if(ban)if(!ban_judge(enemy_x, enemy_y,enemy_num)){ban_flag = 1;break;}
 
 			int yy = 0, xx = 0;
@@ -162,7 +165,7 @@ int main(void) {
 			}
 			//ここで最適x,y
 			x = best_x, y = best_y;
-			board[y][x] = 1;
+			setBoard(x,y,my_num);
 			x++;
 			y++;
 			/*************ロジックここまで***********/

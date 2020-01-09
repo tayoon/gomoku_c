@@ -3,6 +3,7 @@
 #include "judge.h"
 
 extern int board[15][15];
+extern int value_board[15][15];
 int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 
@@ -19,26 +20,58 @@ char direction[8][256] = {
 
 //二つ空白を見つけると終了
 //一方向
-int search(int dir_x, int dir_y, int i,int numOfNode,int cnt_flag, int player_num){      //int player_num = 1or2
+int search(int x, int y, int i,int numOfNode,int cnt_flag, int player_num){      //int player_num = 1or2
 
-  int x = dir_x + dx[i];
-  int y = dir_y + dy[i];
+  x += dx[i];
+  y += dy[i];
 
-	if(board[y][x] == (2/player_num) || cnt_flag==2 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+	if(board[y][x] == (2/player_num) || cnt_flag==2)return numOfNode;
 	if(board[y][x] == 1*player_num)return search(x,y,i,numOfNode + 1,cnt_flag,player_num);
 	if(board[y][x] == 0)return search(x,y,i,numOfNode,cnt_flag + 1,player_num);
 }
 
-//一つでも空白を見つけると終了
-//隣り合ったコマの数を計算
-//一方向
-int search_adj(int dir_x, int dir_y, int i,int numOfNode, int player_num){
+int addValuesBySearch(int *x,int *y,int i,int numOfNode,int cnt_flag, int playerNum,int *backFlag){
 
-  int x = dir_x + dx[i];
-  int y = dir_y + dy[i];
+  (*x) += dx[i];
+  (*y) += dy[i];
 
-	if(board[y][x] == (2/player_num) || board[y][x] == 0 || (x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == 1*player_num)return search_adj(x,y,i,numOfNode + 1,player_num);
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+	if(board[y][x] == (2/playerNum) || cnt_flag==2)return numOfNode;
+  if(board[y][x] == 1*playerNum && cnt_flag==1){*backFlag++;return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);}
+	if(board[y][x] == 1*playerNum)return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);
+	if(board[y][x] == 0)return addValuesBySearch(x,y,i,numOfNode,cnt_flag + 1,playerNum,backFlag);
+}
+
+void setBoard(int x,int y,int num){
+  board[y][x] = num;
+  setValueBoard(x,y,num);
+}
+
+void setValueBoard(int x,int y, int num){
+  int i = 0,j = 0;
+  for(i = y-1; i <= y+1; i++){
+    for(j = x-1; j <= x+1; j++){
+      if(num==1)value_board[i][j]++;
+      if(num==2)value_board[i][j]--;
+    }
+  }
+
+  int fx,fy;
+  int bx,by;
+  int backFlag;
+  int backFlag2;
+
+  for(i = 0; i < 4; i++){
+    int numOfNode = addValuesBySearch(&fx,&fy,i,1,0,num,&backFlag) + addValuesBySearch(&bx,&by,(7-i),0,0,num,&backFlag2);
+    if(numOfNode >= 1){
+      if(!backFlag)fx-=dx[i];fy-=dy[i]; 
+      if(!backFlag2)bx-=dx[i];by-=dy[i];
+
+      value_board[fy][fx] += (numOfNode)*(numOfNode);
+      value_board[by][bx] += (numOfNode)*(numOfNode);
+    }
+  }
 }
 
 //置こうとしているマスの周り確認（優位性）<- ban_judgeを利用
@@ -60,12 +93,12 @@ int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]�
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
     // show_num[i] = search(x,y,i,0,0, player_num);
-    jud_num[i] = search(x,y,i,0,0,player_num) + search_adj(x,y,(7-i),0, player_num);
+    jud_num[i] = search(x,y,i,0,0,player_num) + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続したコマを見つける用
   for(i = 0; i < 4; i++){
-    jud_5[i] = search_adj(x,y,i,0, player_num) + search_adj(x,y,(7-i),0, player_num);
+    jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続しているかに関わらず33,44を判断
@@ -114,12 +147,12 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
     show_num[i] = search(x,y,i,0,0,player_num);
-    jud_num[i] = show_num[i] + search_adj(x,y,(7-i),0,player_num);
+    jud_num[i] = show_num[i] + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続したノードを見つける用
   for(i = 0; i < 4; i++){
-    jud_5[i] = search_adj(x,y,i,0,player_num) + search_adj(x,y,(7-i),0,player_num);
+    jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続しているかに関わらず33,44を判断
