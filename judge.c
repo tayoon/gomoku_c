@@ -21,29 +21,41 @@ char direction[8][256] = {
 
 //二つ空白を見つけると終了
 //一方向
-int search(int x, int y, int i,int numOfNode,int cnt_flag, int player_num){      //int player_num = 1or2
+int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
 
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/player_num) || cnt_flag==2)return numOfNode;
-	if(board[y][x] == 1*player_num)return search(x,y,i,numOfNode + 1,cnt_flag,player_num);
-	if(board[y][x] == 0)return search(x,y,i,numOfNode,cnt_flag + 1,player_num);
+	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
+	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
 }
 
-int addValuesBySearch(int *x,int *y,int i,int numOfNode,int cnt_flag, int playerNum,int *backFlag){
+int addValuesBySearch(int *x,int *y,int i,int numOfNode,int spaceFlag, int playerNum,int *backFlag){
 
   (*x) += dx[i];
   (*y) += dy[i];
 
   if(((*x) < 0 || (*y) < 0) || ((*x) > 14 || (*y) > 14))return numOfNode;
-	if(board[*y][*x] == (2/playerNum) || cnt_flag==2)return numOfNode;
-  if((board[*y][*x] == 1*playerNum) && (cnt_flag==1)){*backFlag++;return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);}
-	if(board[*y][*x] == 1*playerNum)return addValuesBySearch(x,y,i,numOfNode + 1,cnt_flag,playerNum,backFlag);
-	if(board[*y][*x] == 0)return addValuesBySearch(x,y,i,numOfNode,cnt_flag + 1,playerNum,backFlag);
+	if(board[*y][*x] == (2/playerNum) || spaceFlag==2)return numOfNode;
+  if((board[*y][*x] == 1*playerNum) && (spaceFlag==1)){*backFlag=1;return addValuesBySearch(x,y,i,numOfNode + 1,spaceFlag,playerNum,backFlag);}
+	if(board[*y][*x] == 1*playerNum)return addValuesBySearch(x,y,i,numOfNode + 1,spaceFlag,playerNum,backFlag);
+	if(board[*y][*x] == 0)return addValuesBySearch(x,y,i,numOfNode,spaceFlag + 1,playerNum,backFlag);
   return 0;
+}
+
+//全体の評価値
+int getValueOfBoard(){
+    int sum = 0;
+    int i = 0,j = 0;
+    for(i = 0; i < 15; i++){
+        for(j = 0; j < 15; j++){
+            sum += value_board[i][j];
+        }
+    }
+    return sum;
 }
 
 void getValueBoard(){
@@ -58,10 +70,14 @@ void getValueBoard(){
 
 void setValueBoard(int x,int y, int num){
   int i = 0,j = 0;
+  //置いた駒の周囲を＋1する
+  //ボード外なら
   for(i = y-1; i <= y+1; i++){
     if(i < 0 || i > 14)continue;
+
     for(j = x-1; j <= x+1; j++){
       if(j < 0 || j > 14)continue;
+
       if(num==1)value_board[i][j]++;
       if(num==2)value_board[i][j]--;
     }
@@ -82,8 +98,8 @@ void setValueBoard(int x,int y, int num){
       fy-=dy[i];
       bx-=dx[7-i];
       by-=dy[7-i];
-      value_board[fy][fx] += (numOfNode)*(numOfNode);
-      value_board[by][bx] += (numOfNode)*(numOfNode);
+      value_board[fy][fx] += (numOfNode)*(numOfNode)*(numOfNode);
+      value_board[by][bx] += (numOfNode)*(numOfNode)*(numOfNode);
     }
   }
 
@@ -143,8 +159,8 @@ void resetValueBoard(int x,int y, int num){
       by-=dy[7-i];
       // printf("\nfx->%d,fy->%d,backFlag->%d\n",fx,fy,backFlag);
       // printf("bx->%d,by->%d,backFlag2->%d\n\n",bx,by,backFlag2);
-      value_board[fy][fx] -= (numOfNode)*(numOfNode);
-      value_board[by][bx] -= (numOfNode)*(numOfNode);
+      value_board[fy][fx] -= (numOfNode)*(numOfNode)*(numOfNode);
+      value_board[by][bx] -= (numOfNode)*(numOfNode)*(numOfNode);
     }
   }
 
@@ -220,6 +236,7 @@ int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]�
 
 
 int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
+
 	int ban3_cnt = 0;
   int ban4_cnt = 0;
   int five_cnt = 0;
@@ -229,8 +246,8 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   int jud_5[4] = {0,0,0,0};
   int i = 0,j = 0;
 
-  int x = dir_x - 1;
-  int y = dir_y - 1;
+  int x = dir_x;
+  int y = dir_y;
 
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
@@ -258,11 +275,11 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
     switch(jud_5[i]){
       case 2:ban3_cnt--; break;
       case 3:ban4_cnt--; break;
-      case 4:five_cnt++; break;
       case 5:ban6_cnt++; break;
       default: break;
     }
   }
+
   // if(ban3_cnt==2){printf("三三です.\n");return 0;}
   // if(ban4_cnt==2){printf("四四です.\n");return 0;}
   // if(ban6_cnt==2){printf("長連です.\n");return 0;}

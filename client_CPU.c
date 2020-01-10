@@ -11,6 +11,7 @@
 int board[15][15];
 int value_board[15][15];
 extern int alpha_flag, beta_flag;
+extern int alpha, beta;
 
 int main(void) {
 
@@ -72,8 +73,7 @@ int main(void) {
 
 	int x = 0;
 	int y = 0;
-	extern int alpha, beta;
-	int start_flag_2;
+	int start_flag_2=0;
 
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -130,8 +130,9 @@ int main(void) {
 			setBoard(x-1,y-1,MY_NUM);
 			start_flag_2 = 0;
 		}
-		//先手なら2手目から、後手なら1手目からelse通る
+		//先手なら3手目から、後手なら2手目からelse通る
 		else{
+			printf("else\n");
 			char *ptr;
 			ptr = strtok(buffer,",");
 			int enemy_x = atoi(ptr);
@@ -141,11 +142,17 @@ int main(void) {
 
 			/************以下にロジックを書く*********/
 			//相手の禁じ手判定
-			if(ban)if(!ban_judge(enemy_x, enemy_y,ENEMY_NUM)){ban_flag = 1;}
+			if(ban){
+				if(!ban_judge(enemy_x-1, enemy_y-1,ENEMY_NUM)){
+					ban_flag = 1;
+				}
+			}
+			//勝利判定
 			if(checkWin(MY_NUM)){win_flag = 1;}
 			else{
-				int yy = 0, xx = 0;
-				int best_x, best_y;
+				printf("elseElse\n");
+				int xx = 0, yy = 0;
+				int best_x = 0, best_y = 0;
 				//225のうち、自分がどこに置くか
 				int best = INT_MIN;
 				for(xx = SEARCH_START; xx < SEARCH_END; xx++){
@@ -165,15 +172,48 @@ int main(void) {
 					}
 				}
 				//ここで最適x,y
-				getValueBoard();
 				x = best_x, y = best_y;
+				int i = 0;
+				int j = 0;
+				int max = 0;
+				int maxX,maxY;
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						int score = value_board[i][j];
+						if(max <= score){
+							max = score;
+							maxX = j;
+							maxY = i;
+						}
+					}
+				}
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(i==maxY && j==maxX)printf(" ● ");
+						else if(board[i][j]==1)printf(" ○ ");
+						else if(board[i][j]==2)printf(" × ");
+						else printf(" ― ");
+					}
+					printf("\n");
+				}
+				printf("x -> %d,y -> %d\n",x,y);
+				printf("maxX->%d,maxY->%d\n",maxX,maxY);
 				setBoard(x,y,MY_NUM);
+				// getValueBoard();
 				x++;
 				y++;
 				/*************ロジックここまで***********/
 			}
 		}
+		int i = 0;
+		int j = 0;
+		for(i = 0; i < 15; i++){
+			for(j = 0; j < 15; j++){
+				if(board[i][j])value_board[i][j] = 0;
+			}
+		}
 		getBoard();
+		printf("%d\n",start_flag_2);
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
 		else if(win_flag)sprintf(msg, "%s", "win");
 		else sprintf(msg,"%d,%d",x,y);

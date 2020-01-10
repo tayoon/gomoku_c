@@ -90,18 +90,6 @@ int enemy_value(int x, int y){
 //     return min;
 // }
 
-
-int getValueOfBoard(){
-    int sum = 0;
-    int i = 0,j = 0;
-    for(i = 0; i < 15; i++){
-        for(j = 0; j < 15; j++){
-            sum += value_board[i][j];
-        }
-    }
-    return sum;
-}
-
 /******************alphabeta*******************/
 int alpha_flag = 0, beta_flag = 0;      //最初の子ノード探索か判断のための値
 int alpha_mark = 0, beta_mark = 0;
@@ -116,14 +104,14 @@ int maxlevel(int depth, int x, int y){
 	if(depth == 0){            //一番低い子ノード
         //printf("x->%d,y->%d, max return %d (max)\n",x+1,y+1,value);
         //評価
+        int value = getValueOfBoard();
         resetBoard(x,y,MY_NUM);        //手を戻す
-        return getValueOfBoard();
+        return value;
 	}
 
     int xx = 0,yy = 0;
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-
             if(!board[yy][xx]){
                 if(ban_judge(xx,yy,ENEMY_NUM)){
                     //printf("A\n");
@@ -160,14 +148,14 @@ int minlevel(int depth, int x, int y){
         //printf("x->%d,y->%d, min return %d (min)\n",x+1,y+1,value);
         //評価(相手)
         // board[y][x] = 0;       //手を戻す
+        int value = getValueOfBoard();
         resetBoard(x,y,ENEMY_NUM);
-        return getValueOfBoard();
+        return value;
 	}
 
     int xx = 0,yy = 0;
     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-
             if(!board[yy][xx]){
                 if(ban_judge(xx,yy,MY_NUM)){
                     score = maxlevel(depth-1,xx,yy);
