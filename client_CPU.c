@@ -132,7 +132,6 @@ int main(void) {
 		}
 		//先手なら3手目から、後手なら2手目からelse通る
 		else{
-			printf("else\n");
 			char *ptr;
 			ptr = strtok(buffer,",");
 			int enemy_x = atoi(ptr);
@@ -150,27 +149,26 @@ int main(void) {
 			//勝利判定
 			if(checkWin(MY_NUM)){win_flag = 1;}
 			else{
-				printf("elseElse\n");
 				int xx = 0, yy = 0;
 				int best_x = 0, best_y = 0;
 				//225のうち、自分がどこに置くか
 				int best = INT_MIN;
-				for(xx = SEARCH_START; xx < SEARCH_END; xx++){
-					for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-						alpha_flag = 1, beta_flag = 1;
-						if(!board[yy][xx]){
-							if(ban_judge(xx,yy,MY_NUM)){
-								int score = maxlevel(DEPTH_NUM,xx,yy);
-								if(score > best){
-									best = score;
-									best_x = xx, best_y = yy;
-									//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
-								}
-							}//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
-						}
-						//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
-					}
-				}
+				// for(xx = SEARCH_START; xx < SEARCH_END; xx++){
+				// 	for(yy = SEARCH_START; yy < SEARCH_END; yy++){
+				// 		alpha_flag = 1, beta_flag = 1;
+				// 		if(!board[yy][xx]){
+				// 			if(ban_judge(xx,yy,MY_NUM)){
+				// 				int score = maxlevel(DEPTH_NUM,xx,yy);
+				// 				if(score > best){
+				// 					best = score;
+				// 					best_x = xx, best_y = yy;
+				// 					//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
+				// 				}
+				// 			}//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
+				// 		}
+				// 		//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
+				// 	}
+				// }
 				//ここで最適x,y
 				x = best_x, y = best_y;
 				int i = 0;
@@ -179,6 +177,8 @@ int main(void) {
 				int maxX,maxY;
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
+						if(board[i][j])continue;
+						if(!ban_judge(i,j,MY_NUM))continue;
 						int score = value_board[i][j];
 						if(max <= score){
 							max = score;
@@ -196,6 +196,8 @@ int main(void) {
 					}
 					printf("\n");
 				}
+				x = maxX;
+				y = maxY;
 				printf("x -> %d,y -> %d\n",x,y);
 				printf("maxX->%d,maxY->%d\n",maxX,maxY);
 				setBoard(x,y,MY_NUM);
@@ -209,7 +211,9 @@ int main(void) {
 		int j = 0;
 		for(i = 0; i < 15; i++){
 			for(j = 0; j < 15; j++){
-				if(board[i][j])value_board[i][j] = 0;
+				if(board[i][j]){
+					value_board[i][j] = 0;
+				}
 			}
 		}
 		getBoard();

@@ -283,8 +283,8 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   // if(ban3_cnt==2){printf("三三です.\n");return 0;}
   // if(ban4_cnt==2){printf("四四です.\n");return 0;}
   // if(ban6_cnt==2){printf("長連です.\n");return 0;}
-  if(ban3_cnt==2){return 0;}
-  if(ban4_cnt==2){return 0;}
-  if(ban6_cnt==2){return 0;}
+  if(ban3_cnt>=2){return 0;}
+  if(ban4_cnt>=2){return 0;}
+  if(ban6_cnt>=2){return 0;}
   return 1;
 }
