@@ -141,10 +141,8 @@ int main(void) {
 
 			/************以下にロジックを書く*********/
 			//相手の禁じ手判定
-			if(ban){
-				if(!ban_judge(enemy_x-1, enemy_y-1,ENEMY_NUM)){
+			if(ban && !ban_judge(enemy_x-1,enemy_y-1,ENEMY_NUM)){
 					ban_flag = 1;
-				}
 			}
 			//勝利判定
 			if(checkWin(MY_NUM)){win_flag = 1;}
@@ -178,7 +176,7 @@ int main(void) {
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(board[i][j])continue;
-						if(!ban_judge(i,j,MY_NUM))continue;
+						if(!ban && !ban_judge(i,j,MY_NUM))continue;
 						int score = value_board[i][j];
 						if(max <= score){
 							max = score;

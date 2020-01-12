@@ -33,6 +33,20 @@ int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){     
   return 0;
 }
 
+//二つ空白を見つけると終了
+//一方向
+int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+
+  x += dx[i];
+  y += dy[i];
+
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
+	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+  return 0;
+}
+
 int addValuesBySearch(int *x,int *y,int i,int numOfNode,int spaceFlag, int playerNum,int *backFlag){
 
   (*x) += dx[i];
