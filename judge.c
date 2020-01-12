@@ -35,7 +35,7 @@ int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){     
 
 //二つ空白を見つけると終了
 //一方向
-int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+int isEnemyCheck(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum,int noForbiddenFlag){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
