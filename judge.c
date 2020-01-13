@@ -237,7 +237,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
     switch(jud_num[i]){
       case 1:value_board[y][x] += 2;break;
       case 2:value_board[y][x] += 18;break;
-      case 3:value_board[y][x] += 146;break;
+      case 3:value_board[y][x] += 146*player_num;break;
       default:value_board[y][x] += 0;break;
     }
     //printf("%d -> ", value_board[y][x]);
@@ -251,7 +251,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
     switch(jud_5[i]){
       case 1:value_board[y][x] -= 2;break;
       case 2:value_board[y][x] -= 18;break;
-      case 3:value_board[y][x] -= 146;break;
+      case 3:value_board[y][x] -= 146*player_num;break;
       case 4:value_board[y][x] += 10000;break;
       default:value_board[y][x] += 0;break;
     }
