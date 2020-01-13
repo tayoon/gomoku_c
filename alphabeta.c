@@ -13,28 +13,28 @@ extern int board[15][15];
 extern int dx[8];
 extern int dy[8];
 
-//評価
-int my_value(int x, int y){
-    if(!ban_judge(x, y, MY_NUM))return -10000;
-    switch(get_value(x, y, MY_NUM)){
-        case 2: return 10;
-        case 3: return 100;
-        case 4: return 1000;
-        case 5: return 100000;
-        default: return 1;
-    }
-}
+// //評価
+// int my_value(int x, int y){
+//     if(!ban_judge(x, y, MY_NUM))return -10000;
+//     switch(get_value(x, y, MY_NUM)){
+//         case 2: return 10;
+//         case 3: return 100;
+//         case 4: return 1000;
+//         case 5: return 100000;
+//         default: return 1;
+//     }
+// }
 
-int enemy_value(int x, int y){
-    if(!ban_judge(x, y,ENEMY_NUM))return 10000;
-    switch(get_value(x, y, ENEMY_NUM)){
-        case 2: return -10;
-        case 3: return -100;
-        case 4: return -1000;
-        case 5: return -100000;
-        default: return -1;
-    }
-}
+// int enemy_value(int x, int y){
+//     if(!ban_judge(x, y,ENEMY_NUM))return 10000;
+//     switch(get_value(x, y, ENEMY_NUM)){
+//         case 2: return -10;
+//         case 3: return -100;
+//         case 4: return -1000;
+//         case 5: return -100000;
+//         default: return -1;
+//     }
+// }
 
 /******************minmax******************/
 // int maxlevel(int depth, int x, int y,int value){

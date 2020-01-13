@@ -147,10 +147,10 @@ int main(void) {
 			//勝利判定
 			if(checkWin(MY_NUM)){win_flag = 1;}
 			else{
-				int xx = 0, yy = 0;
-				int best_x = 0, best_y = 0;
-				//225のうち、自分がどこに置くか
-				int best = INT_MIN;
+				// int xx = 0, yy = 0;
+				// int best_x = 0, best_y = 0;
+				// //225のうち、自分がどこに置くか
+				// int best = INT_MIN;
 				// for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 				// 	for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 				// 		alpha_flag = 1, beta_flag = 1;
@@ -167,24 +167,43 @@ int main(void) {
 				// 		//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
 				// 	}
 				// }
-				//ここで最適x,y
-				x = best_x, y = best_y;
+				// //ここで最適x,y
+				// x = best_x, y = best_y;
 				int i = 0;
 				int j = 0;
 				int max = 0;
 				int maxX,maxY;
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(board[i][j])continue;
-						if(!ban && !ban_judge(i,j,MY_NUM))continue;
-						int score = value_board[i][j];
-						if(max <= score){
-							max = score;
-							maxX = j;
-							maxY = i;
+				// for(i = 0; i < 15; i++){
+				// 	for(j = 0; j < 15; j++){
+				// 		if(board[i][j]){printf("#,  ");continue;}
+				// 		if(!ban && !ban_judge(i,j,MY_NUM)){printf("b, ");continue;}
+				// 		int score = value_board[i][j];
+				// 		if(max <= score){
+				// 			max = score;
+				// 			maxX = j;
+				// 			maxY = i;
+				// 		}
+				// 		printf("%d, ", score);
+				// 	}
+				// 	printf("\n");
+				// }
+				int k = 0;
+				//for(k = 1; k <= 2; k++){
+					for(i = 0; i < 15; i++){
+						for(j = 0; j < 15; j++){
+							if(board[i][j]){printf("#,  ");continue;}
+							if(!ban && !ban_judge(i,j,MY_NUM)){printf("b, ");continue;}
+							int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
+							if(max <= score){
+								max = score;
+								maxX = j;
+								maxY = i;
+							}
+							printf("%d, ", score);
 						}
+						printf("\n");
 					}
-				}
+				//}
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");

@@ -21,13 +21,26 @@ char direction[8][256] = {
 
 //二つ空白を見つけると終了
 //一方向
-int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+// int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
 
+//   x += dx[i];
+//   y += dy[i];
+
+//   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+// 	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
+// 	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+// 	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+//   return 0;
+// }
+int blockFlag = 0;
+int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+  
   x += dx[i];
   y += dy[i];
 
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
+	if(board[y][x] == (2/playerNum)){blockFlag + 1;return numOfNode;}
+  if(spaceFlag == 2)return numOfNode;
 	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
 	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
@@ -192,61 +205,121 @@ void resetBoard(int x,int y,int num){
   board[y][x] = 0;
   resetValueBoard(x,y,num);
 }
-//置こうとしているマスの周り確認（優位性）<- ban_judgeを利用
-int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
-	int second = 0;
-	int three = 0;
-  int four = 0;
-  int five = 0;
 
+int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
+  value_board[y][x] = 0;
   int jud_num[8] = {0,0,0,0,0,0,0,0};
   // int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
   int jud_5[4] = {0,0,0,0};
+  int block[4];
 
   int i = 0;
-  int x = dir_x - 1;
-  int y = dir_y - 1;
-
   //反対側のコマも判断する
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
     // show_num[i] = search(x,y,i,0,0, player_num);
     jud_num[i] = search(x,y,i,0,0,player_num) + search(x,y,(7-i),0,1,player_num);
+    //printf("jud_num[%d] = %d, ", i, jud_num[i]);
   }
+  //printf("\n");
 
-  //連続したコマを見つける用
+  //連続したコマを見つける用w
   for(i = 0; i < 4; i++){
+    blockFlag = 0;
     jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
+    block[i] = blockFlag;
+    //printf("jud_5[%d] = %d, ", i, jud_5[i]);
   }
+  //printf("\n");
 
   //連続しているかに関わらず33,44を判断
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 1:second++; break;
-      case 2:three++; break;
-      case 3:four++; break;
-      default: break;
+      case 1:value_board[y][x] += 2;break;
+      case 2:value_board[y][x] += 18;break;
+      case 3:value_board[y][x] += 146;break;
+      default:value_board[y][x] += 0;break;
     }
+    //printf("%d -> ", value_board[y][x]);
   }
+  //printf("\n");
 
   //連続している5連,長連を判断
   //また連続している33,44は重複しているので引く
   for(i = 0; i < 4; i++){
+    
     switch(jud_5[i]){
-      case 1:second--; break;
-      case 2:three--; break;
-      case 3:four--; break;
-      case 4:five++; break;
-      default: break;
+      case 1:value_board[y][x] -= 2;break;
+      case 2:value_board[y][x] -= 18;break;
+      case 3:value_board[y][x] -= 146;break;
+      case 4:value_board[y][x] += 10000;break;
+      default:value_board[y][x] += 0;break;
     }
+    if(block[i] == 1)value_board[y][x] /= 2;
+    else if(block[i] == 2)value_board[y][x] = 0;
+    //printf("%d -> ", value_board[y][x]);
   }
-
-  if(second == 1)return 2;
-  if(three == 1)return 3;
-  if(four == 1)return 4;
-  if(five == 1)return 5;
-  return 0;
+  //printf("\n\n");
+  //printf("x:%d, y:%d, player:%d, value:%d\n", x+1, y+1, player_num, value_board[y][x]);
+  return value_board[y][x];
 }
+//置こうとしているマスの周り確認（優位性）<- ban_judgeを利用
+// int get_value(int dir_x, int dir_y, int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
+// 	int second = 0;
+// 	int three = 0;
+//   int four = 0;
+//   int five = 0;
+
+//   int jud_num[8] = {0,0,0,0,0,0,0,0};
+//   // int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
+//   int jud_5[4] = {0,0,0,0};
+
+//   int i = 0;
+//   int x = dir_x - 1;
+//   int y = dir_y - 1;
+
+//   //反対側のコマも判断する
+//   //連続しているかは関係なく33,44を見つける用
+//   for (i = 0; i < 8; i++){
+//     // show_num[i] = search(x,y,i,0,0, player_num);
+//     jud_num[i] = search(x,y,i,0,0,player_num) + search(x,y,(7-i),0,1,player_num);
+//   }
+
+//   //連続したコマを見つける用
+//   for(i = 0; i < 4; i++){
+//     jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
+//   }
+
+//   //連続しているかに関わらず33,44を判断
+//   for(i = 0; i < 8; i++){
+//     switch(jud_num[i]){
+//       case 1:second++; break;
+//       case 2:three++; break;
+//       case 3:four++; break;
+//       default: break;
+//     }
+//   }
+
+//   //連続している5連,長連を判断
+//   //また連続している33,44は重複しているので引く
+//   for(i = 0; i < 4; i++){
+//     switch(jud_5[i]){
+//       case 1:second--; break;
+//       case 2:three--; break;
+//       case 3:four--; break;
+//       case 4:five++; break;
+//       default: break;
+//     }
+//   }
+
+//   if(second == 1)return 2;
+//   if(three == 1)return 3;
+//   if(four == 1)return 4;
+//   if(five == 1)return 5;
+//   return 0;
+// }
+
+
 
 
 int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
