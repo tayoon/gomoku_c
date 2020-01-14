@@ -40,7 +40,7 @@ double search(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum)
 
   // if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode*10;
 	// if(board[y][x] == (2/playerNum))return numOfNode*10;
-  if((x < 0 || y < 0) || (x > 14 || y > 14)){numOfNode -= 1.5;return numOfNode;}
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 	if(board[y][x] == (2/playerNum)){numOfNode -= 1.5;/*printf("ABAB\n");*/return numOfNode;}
   if(spaceFlag == 2)return numOfNode;
 	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
