@@ -201,9 +201,9 @@ int main(void) {
 							}
 							printf("%d, ", score);
 						}
-						printf("\n");
+						//printf("%d, ", score);
 					}
-				//}
+					//printf("\n");
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");

@@ -107,6 +107,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
       case 10:value_board[y][x] += 2;break;
       case 20:value_board[y][x] += 18;break;
       case 30:value_board[y][x] += 146*2;break;
+      case 25:value_board[y][x] += 10000;break;
       case 15:value_board[y][x] += 100;break;
       case 5:value_board[y][x] += 1;break;
       default:value_board[y][x] += 0;break;
@@ -120,13 +121,13 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   for(i = 0; i < 4; i++){
 
     switch(jud_5[i]){
-      case 10:value_board[y][x] -= 2;break;
-      case 20:value_board[y][x] -= 18;break;
-      case 30:value_board[y][x] -= 146;break;
+      case 10:value_board[y][x] += 2;break;
+      case 20:value_board[y][x] += 18;break;
+      case 30:value_board[y][x] += 146;break;
       case 40:value_board[y][x] += 10000;break;
       case 25:value_board[y][x] += 10000;break;
-      case 15:value_board[y][x] -= 100;break;
-      case 5:value_board[y][x] -= 1;break;
+      case 15:value_board[y][x] += 100;break;
+      case 5:value_board[y][x] += 1;break;
       default:value_board[y][x] += 0;break;
     }
   }
