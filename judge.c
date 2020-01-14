@@ -32,7 +32,7 @@ int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){     
   return 0;
 }
 
-//禁じ手判定の際に
+//禁じ手判定の際、敵がいれば禁じ手ではないようにする
 int isEnemyCheck(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum,int noForbiddenFlag){      //int playerNum = 1or2
 
   x += dx[i];
@@ -60,16 +60,7 @@ double valueSearch(int x, int y, int i,double numOfNode,int spaceFlag, int playe
   return 0;
 }
 
-void getValueBoard(){
-  int x = 0,y = 0;
-  for(y = 0; y < 15; y++){
-    for(x = 0; x < 15; x++){
-      printf(" %d ",value_board[y][x]);
-    }
-    printf("\n");
-  }
-}
-
+//5連判定
 int checkWin(int num){
   int x = 0,y = 0;
   int i = 0;
@@ -85,6 +76,7 @@ int checkWin(int num){
   return 0;
 }
 
+//現在の盤面を表示
 void getBoard(){
   int i,j;
   for(i = 0; i < 15;i++){
@@ -95,10 +87,12 @@ void getBoard(){
   }
 }
 
+//ボードに評価値を入れる
 void setBoard(int x,int y,int num){
   board[y][x] = num;
 }
 
+//評価値を返す
 int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   value_board[y][x] = 0;
   int jud_num[8] = {0,0,0,0,0,0,0,0};
@@ -149,6 +143,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   return value_board[y][x];
 }
 
+//禁じ手判定
 int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
 
   int isNoForbidden = 0;
@@ -185,7 +180,7 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   }
 
   //連続している5連,長連を判断
-  //また連続している33,44は重複しているので引く
+  //また連続している三三,四四は重複しているので引く
   for(i = 0; i < 4; i++){
     switch(jud_5[i]){
       case 2:ban3_cnt--; break;
@@ -197,12 +192,11 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
 
   //三三
   if(ban3_cnt>=2){
-    printf("isNoForbidden->%d\n",isNoForbidden);
-    if(isNoForbidden==0){
+      if(isNoForbidden==0){
       return 0;
     }
   }
   if(ban4_cnt>=2){return 0;}    //四四
-  if(ban6_cnt>=2){return 0;}    //長連
+  if(ban6_cnt>=1){return 0;}    //長連
   return 1;
 }

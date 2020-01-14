@@ -10,8 +10,6 @@
 
 int board[15][15];
 int value_board[15][15];
-extern int alpha_flag, beta_flag;
-extern int alpha, beta;
 
 int main(void) {
 
@@ -33,16 +31,21 @@ int main(void) {
 	//scanf("%s",destination);
 	sprintf(destination,"127.0.0.1");		//自分のPCのIPアドレス
 	char port_char[256];
-	int start_flag, white_flag, ban;
+
+	int black_flag, white_flag;//先手・後手
+	int ban = 0;	//禁じ手かどうか
+	int start_flag_2=0;	//2手目用
+
+	//先手か後手の文字列を判断
 	if(!strcmp("black",str)){
 		sprintf(port_char,"12345");
-		start_flag = 1;
+		black_flag = 1;
 		white_flag = 0;
 		ban = 0;
 	}
 	else{
 		sprintf(port_char,"12346");
-		start_flag=0;
+		black_flag=0;
 		white_flag = 1;
 		ban = 1;
 	}
@@ -62,6 +65,7 @@ int main(void) {
 		printf("%sに接続できませんでした\n", destination);
 		return -1;
 	}
+
 	char buffer[1024];
 	printf("%sに接続しました\n", destination);
 	recv(s,buffer,1024,0);		//文字を受ける
@@ -71,25 +75,30 @@ int main(void) {
 	printf("%s\n",name);
 	char msg[256];
 
+	//送信用のx,y
 	int x = 0;
 	int y = 0;
-	int start_flag_2=0;
 
+
+	//以下五目並べの処理
 	while(1){
 		//何か文字列を受け取るまで待機
 		while(-1 == recv(s, buffer, 1024, 0)){}
 		printf("recieve : %s\n",buffer);
 		//endの文字列を受け取ると終了
 		if(!strcmp("end",buffer))break;
-		int ban_flag = 0;
-		int win_flag = 0;
+		int ban_flag = 0;			//禁じ手か否か
+		int win_flag = 0;			//勝利したか否か
+		int draw_flag = 0;		//引き分けか否か
+
 		//先手の1手目
-		if(start_flag){
+		if(black_flag){
 			x = 8, y = 8;
 			setBoard(x-1,y-1,MY_NUM);
-			start_flag = 0;
+			black_flag = 0;
 			start_flag_2 = 1;
 		}
+		//後手の1手目
 		else if(white_flag){
 			char *ptr;
 			ptr = strtok(buffer,",");
@@ -107,6 +116,7 @@ int main(void) {
 			setBoard(x-1,y-1,MY_NUM);
 			white_flag = 0;
 		}
+		//先手の2手目
 		else if(start_flag_2){
 			char *ptr;
 			ptr = strtok(buffer,",");
@@ -159,6 +169,20 @@ int main(void) {
 				win_flag = 1;
 				x++;y++;
 			}
+			//敵の5連阻止
+			else if(checkWin(ENEMY_NUM)){
+				int i = 0,j = 0,k = 0;
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(board[i][j]!=0)continue;
+      			for(k = 0; k < 4; k++){
+        		int numOfNode = search(j,i,k,0,1,ENEMY_NUM) + search(j,i,(7-k),0,1,ENEMY_NUM);
+        		if(numOfNode==4){x = j; y = i;}
+      			}
+					}
+				}
+				x++;y++;
+			}
 			else{
 				int i = 0;
 				int j = 0;
@@ -192,7 +216,6 @@ int main(void) {
 				printf("x -> %d,y -> %d\n",x,y);
 				printf("maxX->%d,maxY->%d\n",maxX,maxY);
 				setBoard(x,y,MY_NUM);
-				// getValueBoard();
 				x++;
 				y++;
 				/*************ロジックここまで***********/
