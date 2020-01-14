@@ -234,7 +234,7 @@ int main(void) {
 			}
 		}
 		getBoard();
-		printf("%d\n",start_flag_2);
+		//printf("%d\n",start_flag_2);
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
 		else if(win_flag)sprintf(msg, "%s", "win");
 		else sprintf(msg,"%d,%d",x,y);

@@ -32,14 +32,16 @@ char direction[8][256] = {
 // 	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
 //   return 0;
 // }
-int blockFlag = 0;
-int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
-  
+double search(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+  // int original_x = x;
+  // int original_y = y;
   x += dx[i];
   y += dy[i];
 
+  // if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode*10;
+	// if(board[y][x] == (2/playerNum))return numOfNode*10;
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/playerNum)){blockFlag + 1;return numOfNode;}
+	if(board[y][x] == (2/playerNum)){numOfNode -= 1.5;/*printf("ABAB\n");*/return numOfNode;}
   if(spaceFlag == 2)return numOfNode;
 	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
 	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
@@ -140,8 +142,8 @@ int checkWin(int num){
     for(y = 0; y < 15; y++){
       if(board[y][x]!=0)continue;
       for(i = 0; i < 4; i++){
-        int numOfNode = search(x,y,i,0,1,num) + search(x,y,(7-i),0,1,num);
-        if(numOfNode==4)return 1;       //大勝利！！！！！！！！！！
+        int numOfNode = search(x,y,i,0,1,num)*10 + search(x,y,(7-i),0,1,num)*10;
+        if(numOfNode==40 || numOfNode == 25)return 1;       //大勝利！！！！！！！！！！
       }
     }
   }
@@ -209,35 +211,32 @@ void resetBoard(int x,int y,int num){
 int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   value_board[y][x] = 0;
   int jud_num[8] = {0,0,0,0,0,0,0,0};
-  // int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
   int jud_5[4] = {0,0,0,0};
   int block[4];
 
   int i = 0;
-  //反対側のコマも判断する
-  //連続しているかは関係なく33,44を見つける用
-  for (i = 0; i < 8; i++){
-    // show_num[i] = search(x,y,i,0,0, player_num);
-    jud_num[i] = search(x,y,i,0,0,player_num) + search(x,y,(7-i),0,1,player_num);
-    //printf("jud_num[%d] = %d, ", i, jud_num[i]);
-  }
-  //printf("\n");
 
   //連続したコマを見つける用w
   for(i = 0; i < 4; i++){
-    blockFlag = 0;
-    jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
-    block[i] = blockFlag;
-    //printf("jud_5[%d] = %d, ", i, jud_5[i]);
+    jud_5[i] = search(x,y,i,0,1,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
+  }
+  //printf("\n");
+
+  //反対側のコマも判断する
+  //連続しているかは関係なく33,44を見つける用
+  for (i = 0; i < 8; i++){
+    jud_num[i] = search(x,y,i,0,0,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
   }
   //printf("\n");
 
   //連続しているかに関わらず33,44を判断
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 1:value_board[y][x] += 2;break;
-      case 2:value_board[y][x] += 18;break;
-      case 3:value_board[y][x] += 146*player_num;break;
+      case 10:value_board[y][x] += 2;break;
+      case 20:value_board[y][x] += 18;break;
+      case 30:value_board[y][x] += 146*2;break;
+      case 15:value_board[y][x] += 100;break;
+      case 5:value_board[y][x] += 1;break;
       default:value_board[y][x] += 0;break;
     }
     //printf("%d -> ", value_board[y][x]);
@@ -249,15 +248,15 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   for(i = 0; i < 4; i++){
     
     switch(jud_5[i]){
-      case 1:value_board[y][x] -= 2;break;
-      case 2:value_board[y][x] -= 18;break;
-      case 3:value_board[y][x] -= 146*player_num;break;
-      case 4:value_board[y][x] += 10000;break;
+      case 10:value_board[y][x] -= 2;break;
+      case 20:value_board[y][x] -= 18;break;
+      case 30:value_board[y][x] -= 146;break;
+      case 40:value_board[y][x] += 10000;break;
+      case 25:value_board[y][x] += 10000;break;
+      case 15:value_board[y][x] -= 100;break;
+      case 5:value_board[y][x] -= 1;break;
       default:value_board[y][x] += 0;break;
     }
-    if(block[i] == 1)value_board[y][x] /= 2;
-    else if(block[i] == 2)value_board[y][x] = 0;
-    //printf("%d -> ", value_board[y][x]);
   }
   //printf("\n\n");
   //printf("x:%d, y:%d, player:%d, value:%d\n", x+1, y+1, player_num, value_board[y][x]);
