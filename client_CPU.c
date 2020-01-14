@@ -149,7 +149,7 @@ int main(void) {
 				int i = 0,j = 0,k = 0;
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
-						if(board[j][i]!=0)continue;
+						if(board[i][j]!=0)continue;
       			for(k = 0; k < 4; k++){
         		int numOfNode = search(j,i,k,0,1,MY_NUM) + search(j,i,(7-k),0,1,MY_NUM);
         		if(numOfNode==4){x = j; y = i;}

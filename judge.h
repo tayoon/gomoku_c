@@ -3,4 +3,3 @@ extern void setBoard(int x,int y,int num);
 extern void getValueBoard();
 extern int checkWin();
 extern void getBoard();
-extern int getValueOfBoard();
