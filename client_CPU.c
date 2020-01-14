@@ -151,8 +151,8 @@ int main(void) {
 					for(j = 0; j < 15; j++){
 						if(board[j][i]!=0)continue;
       			for(k = 0; k < 4; k++){
-        		int numOfNode = search(j,i,k,0,1,MY_NUM)*10 + search(j,i,(7-k),0,1,MY_NUM)*10;
-        		if(numOfNode==40 || numOfNode == 25){x = j; y = i;}
+        		int numOfNode = search(j,i,k,0,1,MY_NUM) + search(j,i,(7-k),0,1,MY_NUM);
+        		if(numOfNode==4){x = j; y = i;}
       			}
 					}
 				}

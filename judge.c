@@ -19,16 +19,16 @@ char direction[8][256] = {
   {"Right Down"}
 };
 
-//禁じ手探索のためのメソッド
-int banSearch(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+//通常の探索のためのメソッド
+int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
 
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
-	if(board[y][x] == 1*playerNum)return banSearch(x,y,i,numOfNode + 1,spaceFlag,playerNum);
-	if(board[y][x] == 0)return banSearch(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
 }
 
@@ -41,12 +41,13 @@ int isEnemyCheck(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum,
   if((x < 0 || y < 0) || (x > 14 || y > 14)){return noForbiddenFlag;}
 	if(spaceFlag==2){return noForbiddenFlag;}
   if(board[y][x] == (2/playerNum)){noForbiddenFlag++;return noForbiddenFlag;}
-	if(board[y][x] == 1*playerNum)return isEnemySearch(x,y,i,numOfNode + 1,spaceFlag,playerNum);
-	if(board[y][x] == 0)return isEnemySearch(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+	if(board[y][x] == 1*playerNum)return isEnemyCheck(x,y,i,numOfNode + 1,spaceFlag,playerNum,noForbiddenFlag);
+	if(board[y][x] == 0)return isEnemyCheck(x,y,i,numOfNode,spaceFlag + 1,playerNum,noForbiddenFlag);
   return 0;
 }
 
-double search(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
+//評価値用の探索メソッド
+double valueSearch(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
@@ -54,8 +55,8 @@ double search(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum)
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
 	if(board[y][x] == (2/playerNum)){numOfNode -= 1.5;return numOfNode;}
   if(spaceFlag == 2)return numOfNode;
-	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
-	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+	if(board[y][x] == 1*playerNum)return valueSearch(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(board[y][x] == 0)return valueSearch(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
 }
 
@@ -139,8 +140,8 @@ int checkWin(int num){
     for(y = 0; y < 15; y++){
       if(board[y][x]!=0)continue;
       for(i = 0; i < 4; i++){
-        int numOfNode = search(x,y,i,0,1,num)*10 + search(x,y,(7-i),0,1,num)*10;
-        if(numOfNode==40 || numOfNode == 25)return 1;       //大勝利！！！！！！！！！！
+        int numOfNode = search(x,y,i,0,1,num) + search(x,y,(7-i),0,1,num);
+        if(numOfNode==4)return 1;       //大勝利！！！！！！！！！！
       }
     }
   }
@@ -215,7 +216,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
 
   //連続したコマを見つける用w
   for(i = 0; i < 4; i++){
-    jud_5[i] = search(x,y,i,0,1,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
+    jud_5[i] = valueSearch(x,y,i,0,1,player_num)*10 + valueSearch(x,y,(7-i),0,1,player_num)*10;
     // printf("x:%d, y:%d, i:%d, jud_5:%d, player:%d\n", x+1, y+1, i, jud_5[i], player_num);
   }
   //printf("\n");
@@ -223,7 +224,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   //反対側のコマも判断する
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
-    jud_num[i] = search(x,y,i,0,0,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
+    jud_num[i] = valueSearch(x,y,i,0,0,player_num)*10 + valueSearch(x,y,(7-i),0,1,player_num)*10;
     // printf("x:%d, y:%d, i:%d, jud_num:%d, player:%d\n", x+1, y+1, i, jud_num[i], player_num);
   }
   //printf("\n");
@@ -318,9 +319,6 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
 //   return 0;
 // }
 
-
-
-
 int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
 
   int isNoForbidden = 0;
@@ -338,13 +336,13 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
 
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
-    show_num[i] = banSearch(x,y,i,0,0,player_num);
-    jud_num[i] = show_num[i] + banSearch(x,y,(7-i),0,1,player_num);
+    show_num[i] = search(x,y,i,0,0,player_num);
+    jud_num[i] = show_num[i] + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続したノードを見つける用
   for(i = 0; i < 4; i++){
-    jud_5[i] = banSearch(x,y,i,0,1,player_num) + banSearch(x,y,(7-i),0,1,player_num);
+    jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続しているかに関わらず33,44を判断
@@ -357,7 +355,7 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   }
 
   for(i = 0;i < 8; i++){
-    
+    isNoForbidden += isEnemyCheck(x,y,i,0,1,player_num,0);
   }
 
   //連続している5連,長連を判断
@@ -374,7 +372,11 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   // if(ban3_cnt==2){printf("三三です.\n");return 0;}
   // if(ban4_cnt==2){printf("四四です.\n");return 0;}
   // if(ban6_cnt==2){printf("長連です.\n");return 0;}
-  if(ban3_cnt>=2){return 0;}
+  if(ban3_cnt>=2){
+    if(isNoForbidden==0){
+      return 0;
+    }
+  }
   if(ban4_cnt>=2){return 0;}
   if(ban6_cnt>=2){return 0;}
   return 1;
