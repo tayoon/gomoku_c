@@ -189,17 +189,17 @@ int main(void) {
 				// }
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
-						if(board[i][j]){/*printf("#,  ");*/continue;}
-						if(!ban && !ban_judge(j,i,MY_NUM)){/*printf("b, ");*/continue;}
+						if(board[i][j]){printf("#,  ");continue;}
+						if(!ban && !ban_judge(j, i, MY_NUM)){printf("b, ");continue;}
 						int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
 						if(max <= score){
 							max = score;
 							maxX = j;
 							maxY = i;
 						}
-						//printf("%d, ", score);
+						printf("%d, ", score);
 					}
-					//printf("\n");
+					printf("\n");
 				}
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
