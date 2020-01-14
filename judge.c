@@ -154,10 +154,8 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   int isNoForbidden = 0;
 	int ban3_cnt = 0;
   int ban4_cnt = 0;
-  int five_cnt = 0;
   int ban6_cnt = 0;
   int jud_num[8] = {0,0,0,0,0,0,0,0};
-  int show_num[8] = {0,0,0,0,0,0,0,0};    //表示用
   int jud_5[4] = {0,0,0,0};
   int i = 0,j = 0;
 
@@ -166,8 +164,7 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
 
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
-    show_num[i] = search(x,y,i,0,0,player_num);
-    jud_num[i] = show_num[i] + search(x,y,(7-i),0,1,player_num);
+    jud_num[i] = search(x,y,i,0,0,player_num); + search(x,y,(7-i),0,1,player_num);
   }
 
   //連続したノードを見つける用
@@ -178,14 +175,13 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   //連続しているかに関わらず33,44を判断
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 2:ban3_cnt++; break;
+      case 2:
+        ban3_cnt++;
+        isNoForbidden += isEnemyCheck(x,y,i,0,1,player_num,0);
+        break;
       case 3:ban4_cnt++; break;
       default: break;
     }
-  }
-
-  for(i = 0;i < 8; i++){
-    isNoForbidden += isEnemyCheck(x,y,i,0,1,player_num,0);
   }
 
   //連続している5連,長連を判断
@@ -199,16 +195,14 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
     }
   }
 
-  // if(ban3_cnt==2){printf("三三です.\n");return 0;}
-  // if(ban4_cnt==2){printf("四四です.\n");return 0;}
-  // if(ban6_cnt==2){printf("長連です.\n");return 0;}
+  //三三
   if(ban3_cnt>=2){
     printf("isNoForbidden->%d\n",isNoForbidden);
     if(isNoForbidden==0){
       return 0;
     }
   }
-  if(ban4_cnt>=2){return 0;}
-  if(ban6_cnt>=2){return 0;}
+  if(ban4_cnt>=2){return 0;}    //四四
+  if(ban6_cnt>=2){return 0;}    //長連
   return 1;
 }
