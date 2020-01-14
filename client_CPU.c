@@ -157,6 +157,7 @@ int main(void) {
 					}
 				}
 				win_flag = 1;
+				x++;y++;
 			}
 			else{
 				int i = 0;
