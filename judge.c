@@ -40,7 +40,7 @@ double search(int x, int y, int i,double numOfNode,int spaceFlag, int playerNum)
 
   // if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode*10;
 	// if(board[y][x] == (2/playerNum))return numOfNode*10;
-  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
+  if((x < 0 || y < 0) || (x > 14 || y > 14)){numOfNode -= 1.5;return numOfNode;}
 	if(board[y][x] == (2/playerNum)){numOfNode -= 1.5;/*printf("ABAB\n");*/return numOfNode;}
   if(spaceFlag == 2)return numOfNode;
 	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
@@ -219,6 +219,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   //連続したコマを見つける用w
   for(i = 0; i < 4; i++){
     jud_5[i] = search(x,y,i,0,1,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
+    printf("x:%d, y:%d, i:%d, jud_5:%d, player:%d\n", x+1, y+1, i, jud_5[i], player_num);
   }
   //printf("\n");
 
@@ -226,6 +227,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
     jud_num[i] = search(x,y,i,0,0,player_num)*10 + search(x,y,(7-i),0,1,player_num)*10;
+    printf("x:%d, y:%d, i:%d, jud_num:%d, player:%d\n", x+1, y+1, i, jud_num[i], player_num);
   }
   //printf("\n");
 
@@ -235,6 +237,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
       case 10:value_board[y][x] += 2;break;
       case 20:value_board[y][x] += 18;break;
       case 30:value_board[y][x] += 146*2;break;
+      case 25:value_board[y][x] += 10000;break;
       case 15:value_board[y][x] += 100;break;
       case 5:value_board[y][x] += 1;break;
       default:value_board[y][x] += 0;break;
@@ -248,13 +251,13 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
   for(i = 0; i < 4; i++){
     
     switch(jud_5[i]){
-      case 10:value_board[y][x] -= 2;break;
-      case 20:value_board[y][x] -= 18;break;
-      case 30:value_board[y][x] -= 146;break;
+      case 10:value_board[y][x] += 2;break;
+      case 20:value_board[y][x] += 18;break;
+      case 30:value_board[y][x] += 146;break;
       case 40:value_board[y][x] += 10000;break;
       case 25:value_board[y][x] += 10000;break;
-      case 15:value_board[y][x] -= 100;break;
-      case 5:value_board[y][x] -= 1;break;
+      case 15:value_board[y][x] += 100;break;
+      case 5:value_board[y][x] += 1;break;
       default:value_board[y][x] += 0;break;
     }
   }

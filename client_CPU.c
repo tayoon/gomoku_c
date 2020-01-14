@@ -187,23 +187,20 @@ int main(void) {
 				// 	}
 				// 	printf("\n");
 				// }
-				int k = 0;
-				//for(k = 1; k <= 2; k++){
-					for(i = 0; i < 15; i++){
-						for(j = 0; j < 15; j++){
-							if(board[i][j]){printf("#,  ");continue;}
-							if(!ban && !ban_judge(i,j,MY_NUM)){printf("b, ");continue;}
-							int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
-							if(max <= score){
-								max = score;
-								maxX = j;
-								maxY = i;
-							}
-							printf("%d, ", score);
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(board[i][j]){/*printf("#,  ");*/continue;}
+						if(!ban && !ban_judge(i,j,MY_NUM)){/*printf("b, ");*/continue;}
+						int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
+						if(max <= score){
+							max = score;
+							maxX = j;
+							maxY = i;
 						}
-						printf("\n");
+						//printf("%d, ", score);
 					}
-				//}
+					//printf("\n");
+				}
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");
