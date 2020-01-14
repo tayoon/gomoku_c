@@ -192,7 +192,7 @@ int main(void) {
 					for(i = 0; i < 15; i++){
 						for(j = 0; j < 15; j++){
 							if(board[i][j]){printf("#,  ");continue;}
-							if(!ban && !ban_judge(i,j,MY_NUM)){printf("b, ");continue;}
+							if(!ban && !ban_judge(j, i, MY_NUM)){printf("b, ");continue;}
 							int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
 							if(max <= score){
 								max = score;
@@ -207,6 +207,7 @@ int main(void) {
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");
+						else if(!ban_judge(j,i,MY_NUM))printf(" B ");
 						else if(board[i][j]==1)printf(" ○ ");
 						else if(board[i][j]==2)printf(" × ");
 						else printf(" ― ");
