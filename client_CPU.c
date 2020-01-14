@@ -145,48 +145,24 @@ int main(void) {
 					ban_flag = 1;
 			}
 			//勝利判定
-			if(checkWin(MY_NUM)){win_flag = 1;}
+			if(checkWin(MY_NUM)){
+				int i = 0,j = 0,k = 0;
+				for(i = 0; i < 15; i++){
+					for(j = 0; j < 15; j++){
+						if(board[j][i]!=0)continue;
+      			for(k = 0; k < 4; k++){
+        		int numOfNode = search(j,i,k,0,1,MY_NUM)*10 + search(j,i,(7-k),0,1,MY_NUM)*10;
+        		if(numOfNode==40 || numOfNode == 25){x = j; y = i;}
+      			}
+					}
+				}
+				win_flag = 1;
+			}
 			else{
-				// int xx = 0, yy = 0;
-				// int best_x = 0, best_y = 0;
-				// //225のうち、自分がどこに置くか
-				// int best = INT_MIN;
-				// for(xx = SEARCH_START; xx < SEARCH_END; xx++){
-				// 	for(yy = SEARCH_START; yy < SEARCH_END; yy++){
-				// 		alpha_flag = 1, beta_flag = 1;
-				// 		if(!board[yy][xx]){
-				// 			if(ban_judge(xx,yy,MY_NUM)){
-				// 				int score = maxlevel(DEPTH_NUM,xx,yy);
-				// 				if(score > best){
-				// 					best = score;
-				// 					best_x = xx, best_y = yy;
-				// 					//printf("x: %d, y: %d, point: %d\n", best_x+1, best_y+1, best);
-				// 				}
-				// 			}//printf("x: %d, y: %d, point: %d ###################################\n", xx+1, yy+1, best);
-				// 		}
-				// 		//printf("x: %d, y: %d end!!!!!!!!!!!!!!!!!!!!!\n", xx+1, yy+1);
-				// 	}
-				// }
-				// //ここで最適x,y
-				// x = best_x, y = best_y;
 				int i = 0;
 				int j = 0;
 				int max = 0;
 				int maxX,maxY;
-				// for(i = 0; i < 15; i++){
-				// 	for(j = 0; j < 15; j++){
-				// 		if(board[i][j]){printf("#,  ");continue;}
-				// 		if(!ban && !ban_judge(i,j,MY_NUM)){printf("b, ");continue;}
-				// 		int score = value_board[i][j];
-				// 		if(max <= score){
-				// 			max = score;
-				// 			maxX = j;
-				// 			maxY = i;
-				// 		}
-				// 		printf("%d, ", score);
-				// 	}
-				// 	printf("\n");
-				// }
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(board[i][j]){printf("#,  ");continue;}
@@ -233,7 +209,7 @@ int main(void) {
 		getBoard();
 		//printf("%d\n",start_flag_2);
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
-		else if(win_flag)sprintf(msg, "%s", "win");
+		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");
 		else sprintf(msg,"%d,%d",x,y);
 		printf("send : %s\n",msg);
 		while(-1 == send(s, msg, strlen(msg), 0)){}

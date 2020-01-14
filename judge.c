@@ -323,6 +323,7 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
 
 int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]のジャッジ
 
+  int isNoForbidden = 0;
 	int ban3_cnt = 0;
   int ban4_cnt = 0;
   int five_cnt = 0;
@@ -353,6 +354,10 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
       case 3:ban4_cnt++; break;
       default: break;
     }
+  }
+
+  for(i = 0;i < 8; i++){
+    
   }
 
   //連続している5連,長連を判断
