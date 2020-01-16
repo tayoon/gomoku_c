@@ -37,7 +37,7 @@ extern int dy[8];
 // }
 
 /******************alphabeta*******************/
-int alpha_flag = 0, beta_flag = 1;      //最初の子ノード探索か判断のための値
+int alpha_flag = 1, beta_flag = 1;      //最初の子ノード探索か判断のための値
 int alpha_mark = 0, beta_mark = 0;
 int alpha = 100, beta = -100;
 
@@ -108,7 +108,7 @@ int minlevel(int depth, int x, int y){
         if(alpha_mark)break;
     }
     alpha_flag = 0;
-    beta_flag = 1;          //
+    beta_flag = 1;          //beta値リセットするため
     beta = -100;            //beta値の初期値をリセット
     // board[y][x] = 0;
     resetBoard(x,y,ENEMY_NUM);
