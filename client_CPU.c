@@ -93,6 +93,7 @@ int main(void) {
 
 		//先手の1手目
 		if(black_flag){
+			printf("先手の一手目です\n");
 			x = 8, y = 8;
 			setBoard(x-1,y-1,MY_NUM);
 			black_flag = 0;
@@ -100,6 +101,7 @@ int main(void) {
 		}
 		//後手の1手目
 		else if(white_flag){
+			printf("後手の一手目です\n");
 			char *ptr;
 			ptr = strtok(buffer,",");
 			int enemy_x = atoi(ptr);
@@ -118,6 +120,7 @@ int main(void) {
 		}
 		//先手の2手目
 		else if(start_flag_2){
+			printf("先手の二手目です\n");
 			char *ptr;
 			ptr = strtok(buffer,",");
 			int enemy_x = atoi(ptr);
@@ -152,48 +155,33 @@ int main(void) {
 			/************以下にロジックを書く*********/
 			//相手の禁じ手判定
 			if(ban && !ban_judge(enemy_x-1,enemy_y-1,ENEMY_NUM)){
+					printf("それはbanだよ\n");
 					ban_flag = 1;
 			}
 			//勝利判定
-			if(checkWin(MY_NUM)){
-				int i = 0,j = 0,k = 0;
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(board[i][j]!=0)continue;
-      			for(k = 0; k < 4; k++){
-        		int numOfNode = search(j,i,k,0,1,MY_NUM) + search(j,i,(7-k),0,1,MY_NUM);
-        		if(numOfNode==4){x = j; y = i;}
-      			}
-					}
-				}
+			else if(checkWin(MY_NUM,&x,&y)){
 				win_flag = 1;
 				x++;y++;
 			}
 			//敵の5連阻止
-			else if(checkWin(ENEMY_NUM)){
-				int i = 0,j = 0,k = 0;
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(board[i][j]!=0)continue;
-      			for(k = 0; k < 4; k++){
-        		int numOfNode = search(j,i,k,0,1,ENEMY_NUM) + search(j,i,(7-k),0,1,ENEMY_NUM);
-        		if(numOfNode==4){x = j; y = i;}
-      			}
-					}
-				}
+			else if(checkWin(ENEMY_NUM,&x,&y)){
 				x++;y++;
 			}
+			//引き分け処理
 			else if(checkDraw()){
+				printf("引き分けだよね\n");
 				draw_flag = 1;
 			}
+			//通常処理
 			else{
+				printf("alreadyPutではないよね else\n");
 				int i = 0;
 				int j = 0;
 				int max = 0;
 				int maxX,maxY;
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
-						if(board[i][j]){printf("#,  ");continue;}
+						if(!isStone(j,i,SPACE_NUM)){printf("#,  ");continue;}
 						if(!ban && !ban_judge(j, i, MY_NUM)){printf("b, ");continue;}
 						int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
 						if(max <= score){
@@ -208,8 +196,8 @@ int main(void) {
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");
-						else if(board[i][j]==1)printf(" ○ ");
-						else if(board[i][j]==2)printf(" × ");
+						else if(isStone(j,i,MY_NUM))printf(" ○ ");
+						else if(isStone(j,i,ENEMY_NUM))printf(" × ");
 						else printf(" ― ");
 					}
 					printf("\n");
@@ -228,13 +216,12 @@ int main(void) {
 		int j = 0;
 		for(i = 0; i < 15; i++){
 			for(j = 0; j < 15; j++){
-				if(board[i][j]){
+				if(!isStone(j,i,SPACE_NUM)){
 					value_board[i][j] = 0;
 				}
 			}
 		}
 		getBoard();
-		//printf("%d\n",start_flag_2);
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
 		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");
 		else if(draw_flag)sprintf(msg,"%s","draw");

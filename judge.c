@@ -19,30 +19,42 @@ char direction[8][256] = {
   {"Right Down"}
 };
 
+//指定した目の状態であれば1を返す
+int isStone(int x,int y,int num){
+  if(board[y][x]==num)return 1;
+  else return 0;
+}
+
 //通常の探索のためのメソッド
 int search(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
 
+  int myNum = (1*playerNum);
+  int enemyNum = (2/playerNum);
+
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/playerNum) || spaceFlag==2)return numOfNode;
-	if(board[y][x] == 1*playerNum)return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
-	if(board[y][x] == 0)return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+	if(isStone(x,y,enemyNum) || spaceFlag==2)return numOfNode;
+	if(isStone(x,y,myNum))return search(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(isStone(x,y,SPACE_NUM))return search(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
 }
 
 //引き分け探索用メソッド
-int limitSearch(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum,int isDrawFlag){      //int playerNum = 1or2
+int limitSearch(int x, int y, int i,int numOfSpace, int playerNum,int isLimit){      //int playerNum = 1or2
 
   x += dx[i];
   y += dy[i];
 
-  if(spaceFlag==2)return isDrawFlag;
-  if((x < 0 || y < 0) || (x > 14 || y > 14))return (isDrawFlag + 1);
-	if(board[y][x] == (2/playerNum))return (isDrawFlag + 1);
-	if(board[y][x] == 1*playerNum)return limitSearch(x,y,i,numOfNode + 1,spaceFlag + 1,playerNum,isDrawFlag);
-	if(board[y][x] == 0)return limitSearch(x,y,i,numOfNode,spaceFlag + 1,playerNum,isDrawFlag);
+  int myNum = (1*playerNum);
+  int enemyNum = (2/playerNum);
+
+  if(isLimit==5)return numOfSpace;
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfSpace;
+	if(isStone(x,y,enemyNum))return numOfSpace;
+	if(isStone(x,y,myNum))return limitSearch(x,y,i,numOfSpace + 1,playerNum,isLimit + 1);
+	if(isStone(x,y,SPACE_NUM))return limitSearch(x,y,i,numOfSpace + 1,playerNum,isLimit + 1);
   return 0;
 }
 
@@ -52,11 +64,14 @@ int isEnemyCheck(int x, int y, int i,int numOfNode,int spaceFlag, int playerNum,
   x += dx[i];
   y += dy[i];
 
-  if((x < 0 || y < 0) || (x > 14 || y > 14)){return noForbiddenFlag;}
-	if(spaceFlag==2){return noForbiddenFlag;}
-  if(board[y][x] == (2/playerNum)){noForbiddenFlag++;return noForbiddenFlag;}
-	if(board[y][x] == 1*playerNum)return isEnemyCheck(x,y,i,numOfNode + 1,spaceFlag,playerNum,noForbiddenFlag);
-	if(board[y][x] == 0)return isEnemyCheck(x,y,i,numOfNode,spaceFlag + 1,playerNum,noForbiddenFlag);
+  int myNum = (1*playerNum);
+  int enemyNum = (2/playerNum);
+
+  if((x < 0 || y < 0) || (x > 14 || y > 14))return noForbiddenFlag;
+	if(spaceFlag==2)return noForbiddenFlag;
+  if(isStone(x,y,enemyNum)){noForbiddenFlag++;return noForbiddenFlag;}
+	if(isStone(x,y,myNum))return isEnemyCheck(x,y,i,numOfNode + 1,spaceFlag,playerNum,noForbiddenFlag);
+	if(isStone(x,y,SPACE_NUM))return isEnemyCheck(x,y,i,numOfNode,spaceFlag + 1,playerNum,noForbiddenFlag);
   return 0;
 }
 
@@ -66,24 +81,26 @@ double valueSearch(int x, int y, int i,double numOfNode,int spaceFlag, int playe
   x += dx[i];
   y += dy[i];
 
+  int myNum = (1*playerNum);
+  int enemyNum = (2/playerNum);
+
   if((x < 0 || y < 0) || (x > 14 || y > 14))return numOfNode;
-	if(board[y][x] == (2/playerNum)){numOfNode -= 1.5;return numOfNode;}
   if(spaceFlag == 2)return numOfNode;
-	if(board[y][x] == 1*playerNum)return valueSearch(x,y,i,numOfNode + 1,spaceFlag,playerNum);
-	if(board[y][x] == 0)return valueSearch(x,y,i,numOfNode,spaceFlag + 1,playerNum);
+	if(isStone(x,y,enemyNum)){numOfNode -= 1.5;return numOfNode;}
+	if(isStone(x,y,myNum))return valueSearch(x,y,i,numOfNode + 1,spaceFlag,playerNum);
+	if(isStone(x,y,SPACE_NUM))return valueSearch(x,y,i,numOfNode,spaceFlag + 1,playerNum);
   return 0;
 }
 
 //5連判定
-int checkWin(int num){
-  int x = 0,y = 0;
+int checkWin(int num,int *x,int *y){
   int i = 0;
-  for(x = 0; x < 15; x++){
-    for(y = 0; y < 15; y++){
-      if(board[y][x]!=0)continue;
+  for(*x = 0; *x < 15; *x++){
+    for(*y = 0; *y < 15; *y++){
+      if(!isStone(*x,*y,SPACE_NUM))continue;
       for(i = 0; i < 4; i++){
-        int numOfNode = search(x,y,i,0,1,num) + search(x,y,(7-i),0,1,num);
-        if(numOfNode==4)return 1;       //大勝利！！！！！！！！！！
+        int numOfNode = search(*x,*y,i,0,1,num) + search(*x,*y,(7-i),0,1,num);
+        if(numOfNode==4){setBoard(*x,*y,num);return 1;}       //大勝利！！！！！！！！！！
       }
     }
   }
@@ -94,38 +111,36 @@ int checkWin(int num){
 int checkDraw(){
 
   int x = 0,y = 0;
-  // int i = 0;
-  // int myDrawFlag = 0;
-  // int enemyDrawFlag = 0;
-  // int total = 0;
-  // for(x = 0; x < 15; x++){
-  //   for(y = 0; y < 15; y++){
-  //     if(board[y][x]!=0)continue;
-  //     for(i = 0; i < 4; i++){
-  //         total += limitSearch(x,y,i,0,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,1,MY_NUM,0);
-  //       if(total==7)return myDrawFlag=1;       //大勝利！！！！！！！！！！
-  //     }
-  //   }
-  // }
-  // total = 0;
-  // for(x = 0; x < 15; x++){
-  //   for(y = 0; y < 15; y++){
-  //     if(board[y][x]!=0)continue;
-  //     for(i = 0; i < 4; i++){
-  //         total += limitSearch(x,y,i,0,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,1,ENEMY_NUM,0);
-  //       if(total==7)return enemyDrawFlag=1;       //大勝利！！！！！！！！！！
-  //     }
-  //   }
-  // }
-  // if(myDrawFlag && enemyDrawFlag)return 1;
+  int i = 0;
 
-  for(y = 0; y < 15; y++){
-    for(x = 0; x < 15; x++){
-      if(!board[y][x])return 0;
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(!isStone(x,y,SPACE_NUM))continue;
+      for(i = 0; i < 4; i++){
+        int mySpace = limitSearch(x,y,i,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,MY_NUM,0);
+        if(mySpace >= 4)return 0;       //引き分けじゃないお
+      }
+    }
+  }
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(!isStone(x,y,SPACE_NUM))continue;
+      for(i = 0; i < 4; i++){
+        int enemySpace = limitSearch(x,y,i,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,ENEMY_NUM,0);
+        if(enemySpace >= 4)return 0;         //引き分けじゃないお
+      }
     }
   }
 
+  printf("引き分けだお\n");
   return 1;
+
+  //盤面が全て埋まれば引き分け
+  // for(y = 0; y < 15; y++){
+  //   for(x = 0; x < 15; x++){
+  //     if(!board[y][x])return 0;
+  //   }
+  // }
 }
 
 //現在の盤面を表示
