@@ -183,6 +183,9 @@ int main(void) {
 				}
 				x++;y++;
 			}
+			else if(checkDraw()){
+				draw_flag = 1;
+			}
 			else{
 				int i = 0;
 				int j = 0;
@@ -234,6 +237,7 @@ int main(void) {
 		//printf("%d\n",start_flag_2);
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
 		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");
+		else if(draw_flag)sprintf(msg,"%s","draw");
 		else sprintf(msg,"%d,%d",x,y);
 		printf("send : %s\n",msg);
 		while(-1 == send(s, msg, strlen(msg), 0)){}

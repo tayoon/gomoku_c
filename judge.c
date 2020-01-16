@@ -90,34 +90,42 @@ int checkWin(int num){
   return 0;
 }
 
+//引き分け処理
 int checkDraw(){
 
   int x = 0,y = 0;
-  int i = 0;
-  int myDrawFlag = 0;
-  int enemyDrawFlag = 0;
-  int total = 0;
-  for(x = 0; x < 15; x++){
-    for(y = 0; y < 15; y++){
-      if(board[y][x]!=0)continue;
-      for(i = 0; i < 4; i++){
-          total += limitSearch(x,y,i,0,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,1,MY_NUM,0);
-        if(total==7)return myDrawFlag=1;       //大勝利！！！！！！！！！！
-      }
+  // int i = 0;
+  // int myDrawFlag = 0;
+  // int enemyDrawFlag = 0;
+  // int total = 0;
+  // for(x = 0; x < 15; x++){
+  //   for(y = 0; y < 15; y++){
+  //     if(board[y][x]!=0)continue;
+  //     for(i = 0; i < 4; i++){
+  //         total += limitSearch(x,y,i,0,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,1,MY_NUM,0);
+  //       if(total==7)return myDrawFlag=1;       //大勝利！！！！！！！！！！
+  //     }
+  //   }
+  // }
+  // total = 0;
+  // for(x = 0; x < 15; x++){
+  //   for(y = 0; y < 15; y++){
+  //     if(board[y][x]!=0)continue;
+  //     for(i = 0; i < 4; i++){
+  //         total += limitSearch(x,y,i,0,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,1,ENEMY_NUM,0);
+  //       if(total==7)return enemyDrawFlag=1;       //大勝利！！！！！！！！！！
+  //     }
+  //   }
+  // }
+  // if(myDrawFlag && enemyDrawFlag)return 1;
+
+  for(y = 0; y < 15; y++){
+    for(x = 0; x < 15; x++){
+      if(!board[y][x])return 0;
     }
   }
-  total = 0;
-  for(x = 0; x < 15; x++){
-    for(y = 0; y < 15; y++){
-      if(board[y][x]!=0)continue;
-      for(i = 0; i < 4; i++){
-          total += limitSearch(x,y,i,0,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,1,ENEMY_NUM,0);
-        if(total==7)return enemyDrawFlag=1;       //大勝利！！！！！！！！！！
-      }
-    }
-  }
-  if(myDrawFlag && enemyDrawFlag)return 1;
-  return 0;
+
+  return 1;
 }
 
 //現在の盤面を表示
