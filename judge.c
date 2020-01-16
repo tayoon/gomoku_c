@@ -95,12 +95,19 @@ double valueSearch(int x, int y, int i,double numOfNode,int spaceFlag, int playe
 //5連判定
 int checkWin(int num,int *x,int *y){
   int i = 0;
-  for(*x = 0; *x < 15; *x++){
-    for(*y = 0; *y < 15; *y++){
-      if(!isStone(*x,*y,SPACE_NUM))continue;
+  int xx = 0;
+  int yy = 0;
+  for(xx = 0; xx < 15; xx++){
+    for(yy = 0; yy < 15; yy++){
+      if(!isStone(xx,yy,SPACE_NUM))continue;
       for(i = 0; i < 4; i++){
-        int numOfNode = search(*x,*y,i,0,1,num) + search(*x,*y,(7-i),0,1,num);
-        if(numOfNode==4){setBoard(*x,*y,num);return 1;}       //大勝利！！！！！！！！！！
+        int numOfNode = search(xx,yy,i,0,1,num) + search(xx,yy,(7-i),0,1,num);
+        if(numOfNode==4){
+          setBoard(xx,yy,MY_NUM);   //探索は相手も自分も行えるが、入れるのは自分だけ
+          *x = xx;
+          *y = yy;
+          return 1;
+        }       //大勝利！！！！！！！！！！
       }
     }
   }
@@ -118,7 +125,7 @@ int checkDraw(){
       if(!isStone(x,y,SPACE_NUM))continue;
       for(i = 0; i < 4; i++){
         int mySpace = limitSearch(x,y,i,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,MY_NUM,0);
-        if(mySpace >= 4)return 0;       //引き分けじゃないお
+        if(mySpace >= 4)return 0;       //引き分けじゃない
       }
     }
   }
@@ -127,20 +134,26 @@ int checkDraw(){
       if(!isStone(x,y,SPACE_NUM))continue;
       for(i = 0; i < 4; i++){
         int enemySpace = limitSearch(x,y,i,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,ENEMY_NUM,0);
-        if(enemySpace >= 4)return 0;         //引き分けじゃないお
+        if(enemySpace >= 4)return 0;         //引き分けじゃない
       }
     }
   }
 
-  printf("引き分けだお\n");
-  return 1;
+  return 1;   //引き分けだね
 
-  //盤面が全て埋まれば引き分け
-  // for(y = 0; y < 15; y++){
-  //   for(x = 0; x < 15; x++){
-  //     if(!board[y][x])return 0;
-  //   }
-  // }
+}
+
+int checkNonValue(int x,int y){
+  int i = 0;
+  for(i = 0; i < 4; i++){
+    int mySpace = limitSearch(x,y,i,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,MY_NUM,0);
+    if(mySpace >= 4)return 0;       //まだそこに置く価値がある
+  }
+  for(i = 0; i < 4; i++){
+    int enemySpace = limitSearch(x,y,i,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,ENEMY_NUM,0);
+    if(enemySpace >= 4)return 0;    //阻止用に敵も探索しときましょうね
+  }
+  return 1;
 }
 
 //現在の盤面を表示
@@ -226,33 +239,33 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
 
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
-    jud_num[i] = search(x,y,i,0,0,player_num); + search(x,y,(7-i),0,1,player_num);
+    jud_num[i] = search(x,y,i,1,0,player_num); + search(x,y,(7-i),1,1,player_num) - 1;
   }
 
   //連続したノードを見つける用
   for(i = 0; i < 4; i++){
-    jud_5[i] = search(x,y,i,0,1,player_num) + search(x,y,(7-i),0,1,player_num);
+    jud_5[i] = search(x,y,i,1,1,player_num) + search(x,y,(7-i),1,1,player_num) - 1;
   }
 
   //連続しているかに関わらず33,44を判断
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 2:
+      case 3:
         ban3_cnt++;
         isNoForbidden += isEnemyCheck(x,y,i,0,1,player_num,0);
         break;
-      case 3:ban4_cnt++; break;
+      case 4:ban4_cnt++; break;
       default: break;
     }
   }
 
   //連続している5連,長連を判断
-  //また連続している三三,四四は重複しているので引く
+  //また連続している三,四は重複しているので引く
   for(i = 0; i < 4; i++){
     switch(jud_5[i]){
-      case 2:ban3_cnt--; break;
-      case 3:ban4_cnt--; break;
-      case 5:ban6_cnt++; break;
+      case 3:ban3_cnt--; break;
+      case 4:ban4_cnt--; break;
+      case 6:ban6_cnt++; break;
       default: break;
     }
   }
@@ -260,10 +273,10 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   //三三
   if(ban3_cnt>=2){
       if(isNoForbidden==0){
-      return 0;
+      return 1;
     }
   }
-  if(ban4_cnt>=2){return 0;}    //四四
-  if(ban6_cnt>=1){return 0;}    //長連
-  return 1;
+  if(ban4_cnt>=2){return 1;}    //四四
+  if(ban6_cnt>=1){return 1;}    //長連
+  return 0;
 }

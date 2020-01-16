@@ -15,7 +15,7 @@
 
 // // //評価
 // // int my_value(int x, int y){
-// //     if(!ban_judge(x, y, MY_NUM))return -10000;
+// //     if(ban_judge(x, y, MY_NUM))return -10000;
 // //     switch(get_value(x, y, MY_NUM)){
 // //         case 2: return 10;
 // //         case 3: return 100;
@@ -26,7 +26,7 @@
 // // }
 
 // // int enemy_value(int x, int y){
-// //     if(!ban_judge(x, y,ENEMY_NUM))return 10000;
+// //     if(ban_judge(x, y,ENEMY_NUM))return 10000;
 // //     switch(get_value(x, y, ENEMY_NUM)){
 // //         case 2: return -10;
 // //         case 3: return -100;
@@ -113,7 +113,7 @@
 //     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 //         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 //             if(!board[yy][xx]){
-//                 if(ban_judge(xx,yy,ENEMY_NUM)){
+//                 if(!ban_judge(xx,yy,ENEMY_NUM)){
 //                     //printf("A\n");
 //                     score = minlevel(depth-1,xx,yy);
 //                     //printf("depth:%d(x:%d, y:%d) <- score:%d(x:%d, y:%d)\n", depth, x+1, y+1, score, xx+1, yy+1);
@@ -157,7 +157,7 @@
 //     for(xx = SEARCH_START; xx < SEARCH_END; xx++){
 //         for(yy = SEARCH_START; yy < SEARCH_END; yy++){
 //             if(!board[yy][xx]){
-//                 if(ban_judge(xx,yy,MY_NUM)){
+//                 if(!ban_judge(xx,yy,MY_NUM)){
 //                     score = maxlevel(depth-1,xx,yy);
 //                     //printf("depth:%d(x:%d, y:%d) <- score:%d(x:%d, y:%d)\n", depth, x+1, y+1, score, xx+1, yy+1);
 //                     if(!alpha_flag)if(score <= alpha){alpha_mark = 1;min = score;break;}         //α値を下回ったら終了

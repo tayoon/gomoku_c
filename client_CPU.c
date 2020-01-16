@@ -3,10 +3,12 @@
 #include <string.h>
 #include <winsock2.h>
 #include <time.h>
+#include <limits.h>
 #include "judge.h"
+#include "define.h"
 #include "judge.c"
 #include "alphabeta.c"
-#include "define.h"
+#include "gomokuController.c"
 
 int board[15][15];
 int value_board[15][15];
@@ -79,7 +81,6 @@ int main(void) {
 	int x = 0;
 	int y = 0;
 
-
 	//以下五目並べの処理
 	while(1){
 		//何か文字列を受け取るまで待機
@@ -93,96 +94,57 @@ int main(void) {
 
 		//先手の1手目
 		if(black_flag){
-			printf("先手の一手目です\n");
-			x = 8, y = 8;
-			setBoard(x-1,y-1,MY_NUM);
-			black_flag = 0;
-			start_flag_2 = 1;
+			blackOne(&x,&y,&black_flag,&start_flag_2);
 		}
 		//後手の1手目
 		else if(white_flag){
-			printf("後手の一手目です\n");
-			char *ptr;
-			ptr = strtok(buffer,",");
-			int enemy_x = atoi(ptr);
-			ptr = strtok(NULL,",");
-			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
-
-			while(1){
-				srand((unsigned)time(NULL));
-				x = rand() % 3 + 7;
-				y = rand() % 3 + 7;
-				if(!board[y-1][x-1])break;
-			}
-			setBoard(x-1,y-1,MY_NUM);
-			white_flag = 0;
+			whiteOne(buffer,&x,&y,&white_flag);
 		}
 		//先手の2手目
 		else if(start_flag_2){
-			printf("先手の二手目です\n");
-			char *ptr;
-			ptr = strtok(buffer,",");
-			int enemy_x = atoi(ptr);
-			ptr = strtok(NULL,",");
-			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
-
-			if(!(enemy_x-x)){
-				x = enemy_x - 1;
-				y = enemy_y;
-			}
-			else if(!(enemy_y-y)){
-				x = enemy_x;
-				y = enemy_y - 1;
-			}
-			else{
-				if(!((enemy_x-x)-(enemy_y-y))){x = 9; y = 7;}
-				else{x = 7; y = 7;}
-			}
-			setBoard(x-1,y-1,MY_NUM);
-			start_flag_2 = 0;
+			blackTwo(buffer,&x,&y,&start_flag_2);
 		}
 		//先手なら3手目から、後手なら2手目からelse通る
 		else{
-			char *ptr;
-			ptr = strtok(buffer,",");
-			int enemy_x = atoi(ptr);
-			ptr = strtok(NULL,",");
-			int enemy_y = atoi(ptr);
-			setBoard(enemy_x-1,enemy_y-1,ENEMY_NUM);
+			int enemy_x,enemy_y;
+			recieveEnemy(buffer,&enemy_x,&enemy_y);		//相手の入力受け取り
 
 			/************以下にロジックを書く*********/
 			//相手の禁じ手判定
-			if(ban && !ban_judge(enemy_x-1,enemy_y-1,ENEMY_NUM)){
+			if(ban && ban_judge(enemy_x,enemy_y,ENEMY_NUM)){
 					printf("それはbanだよ\n");
 					ban_flag = 1;
 			}
 			//勝利判定
 			else if(checkWin(MY_NUM,&x,&y)){
+				printf("五連ができた!!!!!!!!!!!!!大勝利!!!!!!!!!!!!!!!!!!\n");
 				win_flag = 1;
-				x++;y++;
 			}
 			//敵の5連阻止
 			else if(checkWin(ENEMY_NUM,&x,&y)){
-				x++;y++;
+				printf("五連を阻止するよ\n");
 			}
 			//引き分け処理
 			else if(checkDraw()){
-				printf("引き分けだよね\n");
+				printf("引き分けだね\n");
 				draw_flag = 1;
 			}
 			//通常処理
 			else{
-				printf("alreadyPutではないよね else\n");
 				int i = 0;
 				int j = 0;
-				int max = 0;
+				int max = INT_MIN;
 				int maxX,maxY;
+				//全探索
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
-						if(!isStone(j,i,SPACE_NUM)){printf("#,  ");continue;}
-						if(!ban && !ban_judge(j, i, MY_NUM)){printf("b, ");continue;}
+						if(!isStone(j,i,SPACE_NUM)){printf("#,  ");continue;}					//碁石を既に置いていると
+						if(ban){
+							if(ban_judge(j, i, ENEMY_NUM)){printf("c, ");continue;}			//敵の禁じ手の場所を表示
+						}else if(!ban){
+							if(ban_judge(j, i, MY_NUM)){printf("b, ");continue;}				//自分の禁じ手の場所を表示
+						}
+						if(checkNonValue(j, i)){printf("n, ");continue;}							//ここに置いても意味がないということ
 						int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
 						if(max <= score){
 							max = score;
@@ -193,6 +155,7 @@ int main(void) {
 					}
 					printf("\n");
 				}
+				//現在の盤面の状態と次に置くべき場所を表示
 				for(i = 0; i < 15; i++){
 					for(j = 0; j < 15; j++){
 						if(i==maxY && j==maxX)printf(" ● ");
@@ -205,15 +168,13 @@ int main(void) {
 				x = maxX;
 				y = maxY;
 				printf("x -> %d,y -> %d\n",x,y);
-				printf("maxX->%d,maxY->%d\n",maxX,maxY);
 				setBoard(x,y,MY_NUM);
-				x++;
-				y++;
 				/*************ロジックここまで***********/
 			}
 		}
 		int i = 0;
 		int j = 0;
+		//既に石がある場合は評価値を消去する
 		for(i = 0; i < 15; i++){
 			for(j = 0; j < 15; j++){
 				if(!isStone(j,i,SPACE_NUM)){
@@ -222,6 +183,8 @@ int main(void) {
 			}
 		}
 		getBoard();
+		x++;
+		y++;
 		if(ban_flag)sprintf(msg, "%s", "forbidden");
 		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");
 		else if(draw_flag)sprintf(msg,"%s","draw");
