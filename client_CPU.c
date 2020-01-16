@@ -13,6 +13,14 @@
 int board[15][15];
 int value_board[15][15];
 
+int ban_flag = 0;			//禁じ手か否か
+int win_flag = 0;			//勝利したか否か
+int draw_flag = 0;		//引き分けか否か
+int black_flag = 0;		//先手
+int white_flag = 0;		//後手
+int ban = 0;					//禁じ手かどうか
+int start_flag_2=0;		//2手目用
+
 int main(void) {
 
 	//接続するサーバの情報の構造体を用意
@@ -33,10 +41,6 @@ int main(void) {
 	//scanf("%s",destination);
 	sprintf(destination,"127.0.0.1");		//自分のPCのIPアドレス
 	char port_char[256];
-
-	int black_flag, white_flag;//先手・後手
-	int ban = 0;	//禁じ手かどうか
-	int start_flag_2=0;	//2手目用
 
 	//先手か後手の文字列を判断
 	if(!strcmp("black",str)){
@@ -88,88 +92,48 @@ int main(void) {
 		printf("recieve : %s\n",buffer);
 		//endの文字列を受け取ると終了
 		if(!strcmp("end",buffer))break;
-		int ban_flag = 0;			//禁じ手か否か
-		int win_flag = 0;			//勝利したか否か
-		int draw_flag = 0;		//引き分けか否か
 
 		//先手の1手目
 		if(black_flag){
-			blackOne(&x,&y,&black_flag,&start_flag_2);
+			blackOne(&x,&y);
 		}
 		//後手の1手目
 		else if(white_flag){
-			whiteOne(buffer,&x,&y,&white_flag);
+			whiteOne(buffer,&x,&y);
 		}
 		//先手の2手目
 		else if(start_flag_2){
-			blackTwo(buffer,&x,&y,&start_flag_2);
+			blackTwo(buffer,&x,&y);
 		}
 		//先手なら3手目から、後手なら2手目からelse通る
 		else{
+			char* delim = " ************************ ";
 			int enemy_x,enemy_y;
 			recieveEnemy(buffer,&enemy_x,&enemy_y);		//相手の入力受け取り
 
-			/************以下にロジックを書く*********/
 			//相手の禁じ手判定
 			if(ban && ban_judge(enemy_x,enemy_y,ENEMY_NUM)){
-					printf("それはbanだよ\n");
+					printf("%sそれはbanだよ%s\n",delim,delim);
 					ban_flag = 1;
 			}
 			//勝利判定
 			else if(checkWin(MY_NUM,&x,&y)){
-				printf("五連ができた!!!!!!!!!!!!!大勝利!!!!!!!!!!!!!!!!!!\n");
+				printf("%s大勝利%s\n",delim,delim);
 				win_flag = 1;
 			}
 			//敵の5連阻止
 			else if(checkWin(ENEMY_NUM,&x,&y)){
-				printf("五連を阻止するよ\n");
+				printf("%s五連を阻止%s\n",delim,delim);
 			}
 			//引き分け処理
-			else if(checkDraw()){
-				printf("引き分けだね\n");
+			else if(checkDraw(&x,&y)){
+				printf("%s引き分けなんだよなぁ%s\n",delim,delim);
 				draw_flag = 1;
 			}
 			//通常処理
 			else{
-				int i = 0;
-				int j = 0;
-				int max = INT_MIN;
-				int maxX,maxY;
-				//全探索
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(!isStone(j,i,SPACE_NUM)){printf("#,  ");continue;}					//碁石を既に置いていると
-						if(ban){
-							if(ban_judge(j, i, ENEMY_NUM)){printf("c, ");continue;}			//敵の禁じ手の場所を表示
-						}else if(!ban){
-							if(ban_judge(j, i, MY_NUM)){printf("b, ");continue;}				//自分の禁じ手の場所を表示
-						}
-						if(checkNonValue(j, i)){printf("n, ");continue;}							//ここに置いても意味がないということ
-						int score = get_value(j, i, MY_NUM) + get_value(j, i, ENEMY_NUM);
-						if(max <= score){
-							max = score;
-							maxX = j;
-							maxY = i;
-						}
-						printf("%d, ", score);
-					}
-					printf("\n");
-				}
-				//現在の盤面の状態と次に置くべき場所を表示
-				for(i = 0; i < 15; i++){
-					for(j = 0; j < 15; j++){
-						if(i==maxY && j==maxX)printf(" ● ");
-						else if(isStone(j,i,MY_NUM))printf(" ○ ");
-						else if(isStone(j,i,ENEMY_NUM))printf(" × ");
-						else printf(" ― ");
-					}
-					printf("\n");
-				}
-				x = maxX;
-				y = maxY;
-				printf("x -> %d,y -> %d\n",x,y);
-				setBoard(x,y,MY_NUM);
-				/*************ロジックここまで***********/
+				think(&x,&y);
+				// randomPut(&x,&y);				//デバッグ用
 			}
 		}
 		int i = 0;
@@ -182,13 +146,13 @@ int main(void) {
 				}
 			}
 		}
-		getBoard();
+		// getBoard();
 		x++;
 		y++;
-		if(ban_flag)sprintf(msg, "%s", "forbidden");
-		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");
-		else if(draw_flag)sprintf(msg,"%s","draw");
-		else sprintf(msg,"%d,%d",x,y);
+		if(ban_flag)sprintf(msg, "%s", "forbidden");						//禁じ手勝利
+		else if(win_flag)sprintf(msg, "%d,%d,%s", x,y,"win");		//5連勝利
+		else if(draw_flag)sprintf(msg,"%d,%d,%s", x,y,"draw");	//引き分け
+		else sprintf(msg,"%d,%d",x,y);	//通常
 		printf("send : %s\n",msg);
 		while(-1 == send(s, msg, strlen(msg), 0)){}
 	}

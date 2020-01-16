@@ -114,9 +114,8 @@ int checkWin(int num,int *x,int *y){
   return 0;
 }
 
-//引き分け処理
-int checkDraw(){
-
+//引き分け処理　座標を返さないバージョン
+int checkDraw2(){
   int x = 0,y = 0;
   int i = 0;
 
@@ -143,6 +142,47 @@ int checkDraw(){
 
 }
 
+//引き分け処理 適当な座標を返すバージョン
+int checkDraw(int *tx,int *ty){
+
+  int x = 0,y = 0;
+  int i = 0;
+
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(!isStone(x,y,SPACE_NUM))continue;
+      for(i = 0; i < 4; i++){
+        int mySpace = limitSearch(x,y,i,0,MY_NUM,0) + limitSearch(x,y,(7-i),0,MY_NUM,0);
+        if(mySpace >= 4)return 0;       //引き分けじゃない
+      }
+    }
+  }
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(!isStone(x,y,SPACE_NUM))continue;
+      for(i = 0; i < 4; i++){
+        int enemySpace = limitSearch(x,y,i,0,ENEMY_NUM,0) + limitSearch(x,y,(7-i),0,ENEMY_NUM,0);
+        if(enemySpace >= 4)return 0;         //引き分けじゃない
+      }
+    }
+  }
+
+  for(x = 0; x < 15; x++){
+    for(y = 0; y < 15; y++){
+      if(isStone(x,y,SPACE_NUM) && ban_judge(x,y,MY_NUM)){
+        *tx = x;
+        *ty = y;
+        return 1;   //引き分けだよ　一応置く手も返すよ
+      }
+    }
+  }
+
+  return 1;   //引き分けだね
+
+}
+
+//置く価値があるかどうか
+//そこに置いても両者共に5連が作れない場合、1を返す
 int checkNonValue(int x,int y){
   int i = 0;
   for(i = 0; i < 4; i++){
@@ -239,7 +279,7 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
 
   //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
-    jud_num[i] = search(x,y,i,1,0,player_num); + search(x,y,(7-i),1,1,player_num) - 1;
+    jud_num[i] = search(x,y,i,1,0,player_num) + search(x,y,(7-i),1,1,player_num) - 1;
   }
 
   //連続したノードを見つける用
@@ -251,10 +291,14 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   for(i = 0; i < 8; i++){
     switch(jud_num[i]){
       case 3:
+        // printf("jud_num,case3,%s\n",direction[i]);
         ban3_cnt++;
         isNoForbidden += isEnemyCheck(x,y,i,0,1,player_num,0);
+        // printf("isNoForbidden->%d\n",isNoForbidden);
         break;
-      case 4:ban4_cnt++; break;
+      case 4:
+        // printf("jud_num,case4,%s\n",direction[i]);
+        ban4_cnt++; break;
       default: break;
     }
   }
@@ -263,20 +307,37 @@ int ban_judge(int dir_x, int dir_y,int player_num){		//board[dir_y-1][dir_x-1]�
   //また連続している三,四は重複しているので引く
   for(i = 0; i < 4; i++){
     switch(jud_5[i]){
-      case 3:ban3_cnt--; break;
-      case 4:ban4_cnt--; break;
+      case 3:ban3_cnt--;
+        // printf("jud_5,case3,%s\n",direction[i]);
+        break;
+      case 4:ban4_cnt--;
+        // printf("jud_5,case4,%s\n",direction[i]);
+        break;
       case 6:ban6_cnt++; break;
+        // printf("jud_5,case6,%s\n",direction[i]);
+        break;
       default: break;
     }
   }
 
+  // printf("ban3_cnt->%d,ban4_cnt->%d,ban6_cnt->%d\n",ban3_cnt,ban4_cnt,ban6_cnt);
+
   //三三
   if(ban3_cnt>=2){
       if(isNoForbidden==0){
+        // printf("三三です\n");
       return 1;
     }
   }
-  if(ban4_cnt>=2){return 1;}    //四四
-  if(ban6_cnt>=1){return 1;}    //長連
+  //四四
+  if(ban4_cnt>=2){
+    // printf("四四です\n");
+    return 1;
+  }
+  //長連
+  if(ban6_cnt>=1){
+    // printf("長連です\n");
+    return 1;
+  }
   return 0;
 }
