@@ -49,8 +49,9 @@ int maxlevel(int depth, int x, int y){
 
 	if(depth == 0){            //一番低い子ノード
         //評価
-        int value = getValueOfBoard();
-        resetBoard(x,y,MY_NUM);        //手を戻す
+        // int value = getValueOfBoard();
+        int value = 0;
+        // resetBoard(x,y,MY_NUM);        //手を戻す
         return value;
 	}
 
@@ -71,7 +72,7 @@ int maxlevel(int depth, int x, int y){
         if(beta_mark)break;
     }
     beta_flag = 0;
-    resetBoard(x,y,MY_NUM);
+    // resetBoard(x,y,MY_NUM);
     if(beta_mark){beta_mark = 0;return score;}          //β値を上回ったらその時の評価値を返す
     if(max < beta){beta = max;}             //子ノードのmax値がbetaを超えなかった時にbeta値更新
     return max;                             //最大値を返す
@@ -86,8 +87,9 @@ int minlevel(int depth, int x, int y){
     if(depth == 0){            //一番低い子ノード
         //評価(相手)
         // board[y][x] = 0;       //手を戻す
-        int value = getValueOfBoard();
-        resetBoard(x,y,ENEMY_NUM);
+        // int value = getValueOfBoard();
+        int value = 0;
+        // resetBoard(x,y,ENEMY_NUM);
         return value;
 	}
 
@@ -111,7 +113,7 @@ int minlevel(int depth, int x, int y){
     beta_flag = 1;          //beta値リセットするため
     beta = -100;            //beta値の初期値をリセット
     // board[y][x] = 0;
-    resetBoard(x,y,ENEMY_NUM);
+    // resetBoard(x,y,ENEMY_NUM);
     if(alpha_mark){alpha_mark = 0;return score;}         //α値を下回ったらその時の評価値を返す
     return min;                             //最小値を返す
 }

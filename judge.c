@@ -214,6 +214,7 @@ void setBoard(int x,int y,int num){
 
 //評価値を返す
 int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
+
   value_board[y][x] = 0;
   int jud_num[8] = {0,0,0,0,0,0,0,0};
   int jud_5[4] = {0,0,0,0};
@@ -221,45 +222,36 @@ int get_value(int x, int y, int player_num){		//board[y-1][x-1]のジャッジ
 
   int i = 0;
 
-  //連続したコマを見つける用w
-  for(i = 0; i < 4; i++){
-    jud_5[i] = valueSearch(x,y,i,0,1,player_num)*10 + valueSearch(x,y,(7-i),0,1,player_num)*10;
-  }
-
   //反対側のコマも判断する
-  //連続しているかは関係なく33,44を見つける用
   for (i = 0; i < 8; i++){
     jud_num[i] = valueSearch(x,y,i,0,0,player_num)*10 + valueSearch(x,y,(7-i),0,1,player_num)*10;
-  }
-
-  //連続しているかに関わらず33,44を判断
-  for(i = 0; i < 8; i++){
     switch(jud_num[i]){
-      case 10:value_board[y][x] += 5;break;
-      case 20:value_board[y][x] += 20;break;
-      case 30:value_board[y][x] += 82*2;break;
-      case 25:value_board[y][x] += 10000;break;
-      case 15:value_board[y][x] += 18;break;
-      case 5:value_board[y][x] += 4;break;
+      case 10:value_board[y][x] += 5;break;     //二連
+      case 20:value_board[y][x] += 20;break;    //三連
+      case 30:value_board[y][x] += 82*2;break;  //四連
+      // case 25:value_board[y][x] += 10000;break; //敵のいる五連
+      case 15:value_board[y][x] += 18;break;    //敵のいる四連
+      case 5: value_board[y][x] += 4;break;     //敵のいる三連
       default:value_board[y][x] += 0;break;
     }
   }
 
-  //連続している5連,長連を判断
-  //また連続している33,44は重複しているので引く
+  //コマをなるべく連続させるため、余分に付加する
   for(i = 0; i < 4; i++){
-
+    jud_5[i] = valueSearch(x,y,i,0,1,player_num)*10 + valueSearch(x,y,(7-i),0,1,player_num)*10;
     switch(jud_5[i]){
-      case 10:value_board[y][x] += 5;break;
-      case 20:value_board[y][x] += 20;break;
-      case 30:value_board[y][x] += 82;break;
-      case 40:value_board[y][x] += 10000;break;
-      case 25:value_board[y][x] += 10000;break;
-      case 15:value_board[y][x] += 18;break;
-      case 5:value_board[y][x] += 4;break;
+      case 10:value_board[y][x] += 5;break;     //二連
+      case 20:value_board[y][x] += 20;break;    //三連
+      case 30:value_board[y][x] += 82;break;    //四連
+      // case 40:value_board[y][x] += 10000;break; //五連
+      // case 25:value_board[y][x] += 10000;break; //敵のいる五連
+      case 15:value_board[y][x] += 18;break;    //敵のいる四連
+      case 5: value_board[y][x] += 4;break;     //敵のいる三連
       default:value_board[y][x] += 0;break;
     }
   }
+
+
   return value_board[y][x];
 }
 

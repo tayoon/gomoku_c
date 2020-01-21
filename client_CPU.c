@@ -21,7 +21,7 @@ int white_flag = 0;		//後手
 int ban = 0;					//禁じ手かどうか
 int start_flag_2=0;		//2手目用
 
-int main(void) {
+int main(int argc,char *argv[]) {
 
 	//接続するサーバの情報の構造体を用意
 	struct sockaddr_in dest;
@@ -39,7 +39,7 @@ int main(void) {
 	//サーバの情報を入力
 	char destination[256];
 	//scanf("%s",destination);
-	sprintf(destination,"127.0.0.1");		//自分のPCのIPアドレス
+	sprintf(destination,"%s",argv[1]);		//自分のPCのIPアドレス
 	char port_char[256];
 
 	//先手か後手の文字列を判断
